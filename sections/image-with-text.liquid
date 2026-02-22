@@ -1,0 +1,192 @@
+<style>
+  .image-with-text-{{ section.id }} {
+    background-color: {{ section.settings.bg_color }};
+    overflow: hidden;
+  }
+
+  .image-with-text__grid {
+    display: flex;
+    flex-direction: column;
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+
+  .image-with-text__media {
+    width: 100%;
+    position: relative;
+    min-height: 300px;
+  }
+
+  .image-with-text__media img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .image-with-text__content {
+    width: 100%;
+    padding: 50px 5%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+  }
+
+  .image-with-text__title {
+    font-size: 2.2rem;
+    color: var(--color-primary);
+    margin-top: 0;
+    margin-bottom: 20px;
+    font-weight: bold;
+    line-height: 1.2;
+  }
+
+  .image-with-text__text {
+    font-size: 1.1rem;
+    color: #444;
+    line-height: 1.6;
+    margin-bottom: 30px;
+    max-width: 600px;
+  }
+
+  .image-with-text__btn {
+    display: inline-block;
+    background-color: var(--color-button);
+    color: var(--color-button-text);
+    padding: 14px 35px;
+    text-decoration: none;
+    font-weight: bold;
+    border-radius: 4px;
+    text-transform: uppercase;
+    transition: opacity 0.3s ease, transform 0.2s ease;
+  }
+
+  .image-with-text__btn:hover {
+    opacity: 0.9;
+    transform: translateY(-2px);
+  }
+
+  /* --- Responsive Bureau --- */
+  @media screen and (min-width: 769px) {
+    .image-with-text__grid {
+      flex-direction: row;
+      align-items: stretch;
+    }
+    
+    .image-with-text__media {
+      width: 50%;
+      min-height: 500px;
+    }
+
+    .image-with-text__content {
+      width: 50%;
+      padding: 80px 8%;
+    }
+
+    /* Inversion de l'ordre si l'image est configurée à droite */
+    {%- if section.settings.image_position == 'right' -%}
+      .image-with-text__media {
+        order: 2;
+      }
+      .image-with-text__content {
+        order: 1;
+      }
+    {%- endif -%}
+  }
+</style>
+
+<div class="image-with-text-{{ section.id }}">
+  <div class="image-with-text__grid">
+    
+    <div class="image-with-text__media">
+      {%- if section.settings.image != blank -%}
+        <img src="{{ section.settings.image | image_url: width: 1200 }}" 
+             alt="{{ section.settings.image.alt | escape }}"
+             width="{{ section.settings.image.width }}"
+             height="{{ section.settings.image.height }}"
+             loading="lazy">
+      {%- else -%}
+        {{ 'lifestyle-1' | placeholder_svg_tag: 'placeholder-svg' }}
+      {%- endif -%}
+    </div>
+
+    <div class="image-with-text__content">
+      {%- if section.settings.title != blank -%}
+        <h2 class="image-with-text__title">{{ section.settings.title | escape }}</h2>
+      {%- endif -%}
+
+      {%- if section.settings.text != blank -%}
+        <div class="image-with-text__text">
+          {{ section.settings.text }}
+        </div>
+      {%- endif -%}
+
+      {%- if section.settings.button_label != blank and section.settings.button_link != blank -%}
+        <a href="{{ section.settings.button_link }}" class="image-with-text__btn">
+          {{ section.settings.button_label | escape }}
+        </a>
+      {%- endif -%}
+    </div>
+
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Image avec texte",
+  "settings": [
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Couleur de fond",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Image"
+    },
+    {
+      "type": "select",
+      "id": "image_position",
+      "options": [
+        { "value": "left", "label": "À gauche" },
+        { "value": "right", "label": "À droite" }
+      ],
+      "default": "left",
+      "label": "Position de l'image (Sur ordinateur)"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Titre",
+      "default": "Notre Histoire"
+    },
+    {
+      "type": "richtext",
+      "id": "text",
+      "label": "Texte",
+      "default": "<p>Utilisez ce texte pour partager des informations sur votre marque avec vos clients. Décrivez un produit, partagez des annonces ou accueillez les clients dans votre boutique.</p>"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Texte du bouton",
+      "default": "En savoir plus"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "Lien du bouton"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Image avec texte"
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,15 @@
+{
+  "sections": {
+    "main": {
+      "type": "main-contact",
+      "settings": {
+        "email": "contact@shop.co",
+        "phone": "+33 1 23 45 67 89",
+        "hours": "Lundi au Vendredi : 9h00 - 18h00\nSamedi : 10h00 - 13h00"
+      }
+    }
+  },
+  "order": [
+    "main"
+  ]
+}

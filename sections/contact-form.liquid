@@ -1,0 +1,126 @@
+<style>
+  .contact-section {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 40px 5%;
+  }
+  .contact-title {
+    text-align: center;
+    font-size: 2rem;
+    margin-bottom: 30px;
+    color: var(--color-primary);
+  }
+  .contact-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  .contact-form__field {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .contact-form__label {
+    font-weight: 600;
+    color: var(--color-primary);
+    font-size: 0.95rem;
+  }
+  .contact-form__input, .contact-form__textarea {
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-family: inherit;
+    font-size: 1rem;
+    background-color: transparent;
+  }
+  .contact-form__input:focus, .contact-form__textarea:focus {
+    outline: 2px solid var(--color-primary);
+    border-color: transparent;
+  }
+  .contact-form__textarea {
+    resize: vertical;
+    min-height: 150px;
+  }
+  .contact-form__btn {
+    background-color: var(--color-button);
+    color: var(--color-button-text);
+    padding: 15px 30px;
+    border: none;
+    border-radius: 4px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    cursor: pointer;
+    text-transform: uppercase;
+    align-self: flex-start;
+    transition: opacity 0.3s ease;
+  }
+  .contact-form__btn:hover {
+    opacity: 0.9;
+  }
+  .contact-message--success {
+    padding: 15px;
+    background-color: #d4edda;
+    color: #155724;
+    border-radius: 4px;
+    margin-bottom: 20px;
+    text-align: center;
+    font-weight: bold;
+    border: 1px solid #c3e6cb;
+  }
+</style>
+
+<div class="contact-section">
+  {%- if section.settings.title != blank -%}
+    <h2 class="contact-title">{{ section.settings.title | escape }}</h2>
+  {%- endif -%}
+
+  {%- form 'contact', id: 'ContactForm', class: 'contact-form' -%}
+    {%- if form.posted_successfully? -%}
+      <div class="contact-message--success" tabindex="-1" autofocus>
+        Merci ! Votre message a bien été envoyé. Nous vous répondrons dans les plus brefs délais.
+      </div>
+    {%- endif -%}
+
+    <div class="contact-form__field">
+      <label class="contact-form__label" for="ContactForm-name">Nom complet</label>
+      <input type="text" id="ContactForm-name" name="contact[name]" class="contact-form__input" value="{% if form.name %}{{ form.name }}{% elsif customer %}{{ customer.name }}{% endif %}">
+    </div>
+
+    <div class="contact-form__field">
+      <label class="contact-form__label" for="ContactForm-email">Adresse e-mail *</label>
+      <input type="email" id="ContactForm-email" name="contact[email]" class="contact-form__input" value="{% if form.email %}{{ form.email }}{% elsif customer %}{{ customer.email }}{% endif %}" required>
+    </div>
+
+    <div class="contact-form__field">
+      <label class="contact-form__label" for="ContactForm-phone">Numéro de téléphone</label>
+      <input type="tel" id="ContactForm-phone" name="contact[phone]" class="contact-form__input" value="{% if form.phone %}{{ form.phone }}{% elsif customer %}{{ customer.phone }}{% endif %}">
+    </div>
+
+    <div class="contact-form__field">
+      <label class="contact-form__label" for="ContactForm-body">Votre message *</label>
+      <textarea id="ContactForm-body" name="contact[body]" class="contact-form__textarea" required>{%- if form.body -%}{{ form.body }}{%- endif -%}</textarea>
+    </div>
+
+    <button type="submit" class="contact-form__btn">Envoyer le message</button>
+  {%- endform -%}
+</div>
+
+{% schema %}
+{
+  "name": "Formulaire de contact",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Titre",
+      "default": "Contactez-nous"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Formulaire de contact"
+    }
+  ]
+}
+{% endschema %}

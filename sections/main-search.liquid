@@ -1,0 +1,400 @@
+<style>
+  .search-page {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 60px 5%;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+  }
+
+  /* --- En-tête de recherche --- */
+  .search-header {
+    text-align: center;
+    margin-bottom: 50px;
+  }
+  
+  .search-header__title {
+    font-size: clamp(2rem, 4vw, 3rem);
+    font-weight: 900;
+    color: #000;
+    margin: 0 0 20px 0;
+    text-transform: uppercase;
+    letter-spacing: -1px;
+  }
+
+  .search-header__form {
+    max-width: 600px;
+    margin: 0 auto 20px auto;
+    display: flex;
+    position: relative;
+  }
+  
+  .search-header__input {
+    width: 100%;
+    padding: 15px 20px 15px 50px;
+    border: 2px solid #eee;
+    border-radius: 50px;
+    font-size: 1.1rem;
+    outline: none;
+    transition: border-color 0.3s ease;
+  }
+  .search-header__input:focus {
+    border-color: #000;
+  }
+  
+  .search-header__icon {
+    position: absolute;
+    left: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 20px;
+    height: 20px;
+    fill: #999;
+  }
+
+  .search-header__btn {
+    position: absolute;
+    right: 5px;
+    top: 5px;
+    bottom: 5px;
+    background: #000;
+    color: #fff;
+    border: none;
+    border-radius: 40px;
+    padding: 0 25px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: opacity 0.2s;
+  }
+  .search-header__btn:hover {
+    opacity: 0.8;
+  }
+
+  .search-result-count {
+    color: #666;
+    font-size: 1.1rem;
+  }
+
+  /* --- Layout (Filtres + Grille) --- */
+  .search-layout {
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+  }
+
+  /* Sidebar (Filtres) */
+  .search-sidebar {
+    width: 100%;
+  }
+
+  .filters-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .filter-group {
+    border-bottom: 1px solid #E5E5E5;
+    padding-bottom: 15px;
+  }
+  .filter-group__summary {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    font-weight: 700;
+    font-size: 1.05rem;
+    list-style: none;
+    padding: 10px 0;
+    color: #000;
+  }
+  .filter-group__summary::-webkit-details-marker {
+    display: none;
+  }
+  
+  .filter-list {
+    list-style: none;
+    padding: 10px 0 0 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .filter-list__item label {
+    cursor: pointer;
+    font-size: 0.95rem;
+    color: #444;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .filter-list__item input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: #000;
+  }
+
+  /* Grille de résultats */
+  .search-main {
+    flex-grow: 1;
+  }
+  
+  .search-grid {
+    display: grid;
+    grid-template-columns: repeat({{ section.settings.columns_mobile }}, 1fr);
+    gap: 20px;
+  }
+
+  /* Card pour les articles/pages trouvés dans la recherche */
+  .search-article-card {
+    background: #f9f9f9;
+    padding: 30px;
+    border-radius: 8px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    text-decoration: none;
+    color: #000;
+    border: 1px solid #eee;
+    transition: border-color 0.3s;
+  }
+  .search-article-card:hover {
+    border-color: #000;
+  }
+  .search-article-badge {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #666;
+    margin-bottom: 10px;
+  }
+
+  /* Pagination */
+  .pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin-top: 60px;
+  }
+  .pagination__item {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-width: 45px;
+    height: 45px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    text-decoration: none;
+    color: #000;
+    font-weight: 600;
+  }
+  .pagination__item:hover {
+    background-color: #f4f4f4;
+  }
+  .pagination__item--current {
+    background-color: #000;
+    color: #fff;
+    border-color: #000;
+    pointer-events: none;
+  }
+
+  /* Responsive Desktop */
+  @media (min-width: 900px) {
+    .search-layout {
+      flex-direction: row;
+      align-items: flex-start;
+    }
+    .search-sidebar {
+      width: 280px;
+      flex-shrink: 0;
+      position: sticky;
+      top: 100px;
+    }
+    .search-grid {
+      grid-template-columns: repeat({{ section.settings.columns_desktop }}, 1fr);
+      gap: 30px;
+    }
+  }
+</style>
+
+<section class="search-page">
+  
+  <div class="search-header">
+    <h1 class="search-header__title">
+      {%- if search.performed -%}
+        Résultats de recherche
+      {%- else -%}
+        Que recherchez-vous ?
+      {%- endif -%}
+    </h1>
+    
+    <form action="{{ routes.search_url }}" method="get" class="search-header__form" role="search">
+      <svg class="search-header__icon" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+      <input type="text" name="q" class="search-header__input" value="{{ search.terms | escape }}" placeholder="T-shirts, Jeans, Marques...">
+      <input type="hidden" name="options[prefix]" value="last">
+      <button type="submit" class="search-header__btn">Rechercher</button>
+    </form>
+
+    {%- if search.performed -%}
+      <p class="search-result-count">
+        {{ search.results_count }} résultat{% if search.results_count > 1 %}s{% endif %} pour "<strong>{{ search.terms | escape }}</strong>"
+      </p>
+    {%- endif -%}
+  </div>
+
+  {%- if search.performed -%}
+    <div class="search-layout">
+      
+      {%- if search.filters != empty -%}
+        <aside class="search-sidebar">
+          <form class="filters-form" id="SearchFiltersForm">
+            <input type="hidden" name="q" value="{{ search.terms | escape }}">
+            
+            <div style="display:flex; justify-content:space-between; align-items:center; border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 15px;">
+              <h3 style="margin:0; font-size:1.2rem; text-transform:uppercase;">Filtres</h3>
+              <a href="{{ routes.search_url }}?q={{ search.terms | escape }}" style="font-size:0.85rem; color:#666; text-decoration:underline;">Effacer tout</a>
+            </div>
+
+            {%- for filter in search.filters -%}
+              <details class="filter-group" open>
+                <summary class="filter-group__summary">
+                  <span>{{ filter.label }}</span>
+                  <span>+</span>
+                </summary>
+                
+                <div class="filter-group__content">
+                  {%- case filter.type -%}
+                    {%- when 'list' -%}
+                      <ul class="filter-list">
+                        {%- for filter_value in filter.values -%}
+                          <li class="filter-list__item">
+                            <label for="Filter-{{ filter.param_name }}-{{ forloop.index }}" {% if filter_value.count == 0 and filter_value.active == false %}style="opacity: 0.5;"{% endif %}>
+                              <input type="checkbox"
+                                     name="{{ filter_value.param_name }}"
+                                     value="{{ filter_value.value }}"
+                                     id="Filter-{{ filter.param_name }}-{{ forloop.index }}"
+                                     {% if filter_value.active %}checked{% endif %}
+                                     {% if filter_value.count == 0 and filter_value.active == false %}disabled{% endif %}>
+                              {{ filter_value.label }} ({{ filter_value.count }})
+                            </label>
+                          </li>
+                        {%- endfor -%}
+                      </ul>
+                  {%- endcase -%}
+                </div>
+              </details>
+            {%- endfor -%}
+            
+            <noscript>
+              <button type="submit" style="width:100%; padding:10px; background:#000; color:#fff; border:none; border-radius:4px; margin-top:15px; font-weight:bold;">Appliquer</button>
+            </noscript>
+          </form>
+        </aside>
+      {%- endif -%}
+
+      <main class="search-main">
+        {% paginate search.results by section.settings.results_per_page %}
+          
+          {%- if search.results_count == 0 -%}
+            <div style="text-align: center; padding: 60px 0; color: #666; font-size: 1.2rem; background: #f9f9f9; border-radius: 8px;">
+              Aucun résultat trouvé pour "{{ search.terms | escape }}". <br>Vérifiez l'orthographe ou essayez d'autres mots-clés.
+            </div>
+          {%- else -%}
+            <div class="search-grid">
+              {%- for item in search.results -%}
+                
+                {%- case item.object_type -%}
+                  {%- when 'product' -%}
+                    {% render 'product-card', product: item %}
+                  
+                  {%- when 'article' -%}
+                    <a href="{{ item.url }}" class="search-article-card">
+                      <span class="search-article-badge">Article de blog</span>
+                      <h3 style="margin:0; font-size:1.2rem;">{{ item.title }}</h3>
+                    </a>
+                  
+                  {%- when 'page' -%}
+                    <a href="{{ item.url }}" class="search-article-card">
+                      <span class="search-article-badge">Page</span>
+                      <h3 style="margin:0; font-size:1.2rem;">{{ item.title }}</h3>
+                    </a>
+                {%- endcase -%}
+
+              {%- endfor -%}
+            </div>
+          {%- endif -%}
+
+          {%- if paginate.pages > 1 -%}
+            <nav class="pagination" role="navigation">
+              {%- if paginate.previous -%}
+                <a href="{{ paginate.previous.url }}" class="pagination__item">&larr;</a>
+              {%- endif -%}
+
+              {%- for part in paginate.parts -%}
+                {%- if part.is_link -%}
+                  <a href="{{ part.url }}" class="pagination__item">{{ part.title }}</a>
+                {%- else -%}
+                  <span class="pagination__item {% if part.title == paginate.current_page %}pagination__item--current{% endif %}">{{ part.title }}</span>
+                {%- endif -%}
+              {%- endfor -%}
+
+              {%- if paginate.next -%}
+                <a href="{{ paginate.next.url }}" class="pagination__item">&rarr;</a>
+              {%- endif -%}
+            </nav>
+          {%- endif -%}
+
+        {% endpaginate %}
+      </main>
+
+    </div>
+  {%- endif -%}
+</section>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const filtersForm = document.getElementById('SearchFiltersForm');
+    if (filtersForm) {
+      filtersForm.addEventListener('change', function() {
+        filtersForm.submit();
+      });
+    }
+  });
+</script>
+
+{% schema %}
+{
+  "name": "Page de recherche",
+  "settings": [
+    {
+      "type": "range",
+      "id": "results_per_page",
+      "min": 12,
+      "max": 48,
+      "step": 4,
+      "default": 24,
+      "label": "Résultats par page"
+    },
+    {
+      "type": "range",
+      "id": "columns_desktop",
+      "min": 2,
+      "max": 5,
+      "step": 1,
+      "default": 3,
+      "label": "Colonnes sur ordinateur"
+    },
+    {
+      "type": "select",
+      "id": "columns_mobile",
+      "options": [
+        { "value": "1", "label": "1 par ligne" },
+        { "value": "2", "label": "2 par ligne" }
+      ],
+      "default": "2",
+      "label": "Colonnes sur mobile"
+    }
+  ]
+}
+{% endschema %}

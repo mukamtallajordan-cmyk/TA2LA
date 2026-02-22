@@ -1,0 +1,218 @@
+
+{% render 'section-background', section_id: section.id, bg_color: section.settings.section_bg %}
+
+<style>
+  .cat-icons-section-{{ section.id }} {
+    padding: {{ section.settings.padding_y }}px 5%;
+    max-width: 1400px;
+    margin: 0 auto;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+  }
+
+  .cat-icons__header {
+    text-align: center;
+    margin-bottom: 40px;
+  }
+
+  .cat-icons__title {
+    font-size: clamp(1.8rem, 3vw, 2.2rem);
+    font-weight: 700;
+    color: #111;
+    margin: 0;
+  }
+
+  .cat-icons__title span {
+    color: {{ section.settings.accent_color }};
+  }
+
+  .cat-icons__track {
+    display: flex;
+    justify-content: {% if section.blocks.size < 6 %}center{% else %}flex-start{% endif %};
+    gap: 30px;
+    overflow-x: auto;
+    padding-bottom: 20px;
+    scrollbar-width: none; 
+    -ms-overflow-style: none;
+  }
+  .cat-icons__track::-webkit-scrollbar {
+    display: none;
+  }
+
+  .cat-icon-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    text-decoration: none;
+    color: #111;
+    min-width: 100px;
+    transition: transform 0.2s;
+  }
+  .cat-icon-item:hover {
+    transform: translateY(-5px);
+  }
+
+  .cat-icon-item__circle {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+  }
+
+  .cat-icon-item__img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .cat-icon-item__img--icon {
+    width: 50%;
+    height: 50%;
+    object-fit: contain;
+  }
+
+  .cat-icon-item__text {
+    font-size: 0.95rem;
+    font-weight: 700;
+    text-align: center;
+    line-height: 1.2;
+    max-width: 110px;
+  }
+
+  @media (max-width: 768px) {
+    .cat-icons__track {
+      gap: 15px;
+      justify-content: flex-start;
+      padding: 0 5% 20px 5%;
+    }
+    .cat-icon-item {
+      min-width: 80px;
+    }
+    .cat-icon-item__circle {
+      width: 80px;
+      height: 80px;
+    }
+    .cat-icon-item__text {
+      font-size: 0.85rem;
+    }
+  }
+</style>
+
+<div class="cat-icons-section-{{ section.id }}">
+  <div class="cat-icons__header">
+    {%- if section.settings.title != blank -%}
+      <h2 class="cat-icons__title">
+        {{ section.settings.title | replace: '[', '<span>' | replace: ']', '</span>' }}
+      </h2>
+    {%- endif -%}
+  </div>
+
+  <div class="cat-icons__track">
+    {%- for block in section.blocks -%}
+      <a href="{{ block.settings.link }}" class="cat-icon-item" {{ block.shopify_attributes }}>
+        <div class="cat-icon-item__circle" style="background-color: {{ block.settings.bg_color }};">
+          {%- if block.settings.image != blank -%}
+            <img src="{{ block.settings.image | image_url: width: 200 }}" 
+                 alt="{{ block.settings.title | escape }}" 
+                 class="{% if block.settings.is_icon %}cat-icon-item__img--icon{% else %}cat-icon-item__img{% endif %}"
+                 loading="lazy">
+          {%- else -%}
+            <span style="font-weight: bold; color: #fff;">{{ block.settings.title | slice: 0, 2 | upcase }}</span>
+          {%- endif -%}
+        </div>
+        <span class="cat-icon-item__text">{{ block.settings.title | escape }}</span>
+      </a>
+    {%- endfor -%}
+  </div>
+</div>
+
+{% schema %}
+
+{
+  "name": "Icônes Catégories",
+  "max_blocks": 12,
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Titre",
+      "default": "Most popular [categories] for products"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Couleur d'accentuation",
+      "default": "#00A99D"
+    },
+    {
+      "type": "range",
+      "id": "padding_y",
+      "min": 20,
+      "max": 100,
+      "step": 5,
+      "unit": "px",
+      "label": "Marge verticale",
+      "default": 60
+    }
+  ],
+  "blocks": [
+    {
+      "type": "category",
+      "name": "Catégorie",
+      "settings": [
+
+       {
+      "type": "color_background",
+      "id": "section_bg",
+      "label": "Couleur d'arrière-plan de la section",
+      "default": "transparent"
+    },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Texte",
+          "default": "New Arrivals"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Lien"
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image ou Icône"
+        },
+        {
+          "type": "checkbox",
+          "id": "is_icon",
+          "label": "C'est une icône (taille réduite)",
+          "default": true
+        },
+        {
+          "type": "color",
+          "id": "bg_color",
+          "label": "Fond du cercle",
+          "default": "#E8F5F4"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Icônes Catégories",
+      "blocks": [
+        { "type": "category", "settings": { "title": "New", "bg_color": "#F04A22" } },
+        { "type": "category", "settings": { "title": "Clearance", "bg_color": "#00A99D" } },
+        { "type": "category", "settings": { "title": "Fashion", "bg_color": "#E8F5F4" } }
+      ]
+    }
+  ]
+}
+
+{% endschema %}

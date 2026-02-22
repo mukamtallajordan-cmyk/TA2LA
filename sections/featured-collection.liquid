@@ -1,0 +1,420 @@
+<style>
+  :root {
+    --bm-border-color: #E2E8F0;
+    --bm-bg-color: #ffffff;
+    --bm-text-main: #000000;
+    --bm-text-muted: #64748B;
+    --bm-badge-bg: #F1F5F9;
+    --bm-badge-text: #0F172A;
+    --bm-accent: #000000; /* Bouton noir signature */
+    --bm-radius: 16px;
+  }
+
+  .bm-section-{{ section.id }} {
+    background-color: {{ section.settings.bg_color }};
+    padding: {{ section.settings.padding_y }}px 5%;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+
+  .bm-container {
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+
+  /* --- En-tête --- */
+  .bm-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 30px;
+  }
+
+  .bm-title {
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--bm-text-main);
+    margin: 0;
+    letter-spacing: -0.5px;
+  }
+
+  .bm-view-all {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--bm-text-main);
+    text-decoration: underline;
+    text-underline-offset: 4px;
+    transition: opacity 0.2s ease;
+  }
+  .bm-view-all:hover {
+    opacity: 0.7;
+  }
+
+  /* --- Grille / Slider --- */
+  .bm-grid {
+    display: grid;
+    grid-template-columns: repeat({{ section.settings.columns_desktop }}, 1fr);
+    gap: 24px;
+  }
+
+  /* --- Carte Produit Type Back Market --- */
+  .bm-card {
+    background-color: var(--bm-bg-color);
+    border: 1px solid var(--bm-border-color);
+    border-radius: var(--bm-radius);
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    text-decoration: none;
+    color: inherit;
+    transition: box-shadow 0.3s ease, transform 0.3s ease, border-color 0.3s ease;
+    position: relative;
+    height: 100%;
+  }
+
+  .bm-card:hover {
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.06);
+    transform: translateY(-4px);
+    border-color: #cbd5e1;
+  }
+
+  /* Badge d'état (ex: Parfait état) */
+  .bm-condition-badge {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    background-color: var(--bm-badge-bg);
+    color: var(--bm-badge-text);
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 6px 12px;
+    border-radius: 20px;
+    z-index: 2;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  /* Image */
+  .bm-image-wrapper {
+    position: relative;
+    width: 100%;
+    padding-top: 100%; /* Ratio 1:1 Carré parfait */
+    margin-bottom: 20px;
+    background-color: transparent;
+  }
+
+  .bm-image-wrapper img, .bm-image-wrapper svg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain; /* L'image rentre parfaitement sans être coupée */
+    padding: 20px; /* Donne de l'espace pour respirer autour du produit */
+    transition: transform 0.3s ease;
+  }
+
+  .bm-card:hover .bm-image-wrapper img {
+    transform: scale(1.05); /* Léger zoom au survol */
+  }
+
+  /* Informations */
+  .bm-info {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+  }
+
+  .bm-product-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--bm-text-main);
+    margin: 0 0 10px 0;
+    line-height: 1.3;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  /* Prix */
+  .bm-pricing {
+    margin-top: auto; /* Pousse le prix vers le bas */
+    margin-bottom: 20px;
+  }
+
+  .bm-price-current {
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: var(--bm-text-main);
+    display: block;
+  }
+
+  .bm-price-compare {
+    font-size: 0.9rem;
+    color: var(--bm-text-muted);
+    text-decoration: line-through;
+    margin-top: 2px;
+    display: block;
+  }
+  .bm-price-compare span {
+    text-decoration: none; /* Pour le texte "Neuf :" */
+  }
+
+  /* Bouton d'ajout (Style minimaliste Back Market) */
+  .bm-add-form {
+    margin-top: 10px;
+  }
+  
+  .bm-add-btn {
+    width: 100%;
+    background-color: var(--bm-accent);
+    color: #ffffff;
+    border: none;
+    border-radius: 8px; /* Bouton rectangulaire très légèrement arrondi */
+    padding: 14px 0;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.1s;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .bm-add-btn:hover {
+    background-color: #333333;
+  }
+
+  .bm-add-btn:active {
+    transform: scale(0.98);
+  }
+
+  .bm-add-btn:disabled {
+    background-color: #e2e8f0;
+    color: #94a3b8;
+    cursor: not-allowed;
+  }
+
+  /* --- Responsive Mobile (Swipe Horizontal) --- */
+  @media (max-width: 900px) {
+    .bm-section-{{ section.id }} {
+      padding: {{ section.settings.padding_y | divided_by: 1.5 }}px 0 30px 5%; /* Padding gauche seulement pour laisser déborder à droite */
+    }
+    
+    .bm-header {
+      padding-right: 5%; /* Remet le padding à droite pour l'en-tête */
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 10px;
+    }
+
+    .bm-title {
+      font-size: 1.6rem;
+    }
+
+    /* Transforme la grille en slider horizontal swipeable */
+    .bm-grid {
+      display: flex;
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      padding-bottom: 20px;
+      padding-right: 5%; /* Espace à la fin du scroll */
+      gap: 16px;
+      -ms-overflow-style: none;  /* IE and Edge */
+      scrollbar-width: none;  /* Firefox */
+    }
+    
+    .bm-grid::-webkit-scrollbar {
+      display: none; /* Chrome, Safari and Opera */
+    }
+
+    .bm-card {
+      flex: 0 0 75%; /* La carte prend 75% de l'écran, laissant voir un bout de la suivante */
+      scroll-snap-align: start;
+    }
+    
+    .bm-condition-badge {
+      font-size: 0.65rem;
+      padding: 5px 10px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .bm-card {
+      flex: 0 0 85%; /* Cartes un peu plus larges sur très petits écrans */
+    }
+  }
+</style>
+
+<section class="bm-section-{{ section.id }}">
+  <div class="bm-container">
+    
+    <div class="bm-header">
+      {%- if section.settings.title != blank -%}
+        <h2 class="bm-title">{{ section.settings.title | escape }}</h2>
+      {%- endif -%}
+      
+      {%- assign collection = collections[section.settings.collection] -%}
+      {%- if section.settings.show_view_all and collection != blank -%}
+        <a href="{{ collection.url }}" class="bm-view-all">{{ section.settings.view_all_text | escape }}</a>
+      {%- endif -%}
+    </div>
+
+    <div class="bm-grid">
+      {%- if collection != blank and collection.products_count > 0 -%}
+        
+        {%- for product in collection.products limit: section.settings.products_to_show -%}
+          <div class="bm-card">
+            
+            <a href="{{ product.url }}" style="text-decoration: none; color: inherit; flex-grow: 1; display: flex; flex-direction: column;">
+              
+              {%- if section.settings.show_badge -%}
+                <div class="bm-condition-badge">{{ section.settings.badge_text }}</div>
+              {%- endif -%}
+
+              <div class="bm-image-wrapper">
+                {%- if product.featured_image -%}
+                  <img src="{{ product.featured_image | image_url: width: 600 }}" alt="{{ product.title | escape }}" width="600" height="600" loading="lazy">
+                {%- else -%}
+                  {{ 'product-1' | placeholder_svg_tag: 'placeholder-svg' }}
+                {%- endif -%}
+              </div>
+
+              <div class="bm-info">
+                <h3 class="bm-product-title">{{ product.title }}</h3>
+                
+                <div class="bm-pricing">
+                  <span class="bm-price-current">{{ product.price | money }}</span>
+                  {%- if product.compare_at_price > product.price -%}
+                    <span class="bm-price-compare"><span>Neuf : </span>{{ product.compare_at_price | money }}</span>
+                  {%- endif -%}
+                </div>
+              </div>
+            </a>
+
+            <form method="post" action="/cart/add" class="bm-add-form">
+              <input type="hidden" name="id" value="{{ product.variants.first.id }}">
+              <button type="submit" class="bm-add-btn" {% if product.available == false %}disabled{% endif %}>
+                {%- if product.available -%}
+                  Ajouter au panier
+                {%- else -%}
+                  Épuisé
+                {%- endif -%}
+              </button>
+            </form>
+
+          </div>
+        {%- endfor -%}
+
+      {%- else -%}
+        
+        {%- for i in (1..section.settings.products_to_show) -%}
+          <div class="bm-card">
+            <div class="bm-condition-badge">Parfait état</div>
+            <div class="bm-image-wrapper">
+              {{ 'product-' | append: i | placeholder_svg_tag: 'placeholder-svg' }}
+            </div>
+            <div class="bm-info">
+              <h3 class="bm-product-title">Produit Reconditionné Premium</h3>
+              <div class="bm-pricing">
+                <span class="bm-price-current">299,00 €</span>
+                <span class="bm-price-compare"><span>Neuf : </span>399,00 €</span>
+              </div>
+            </div>
+            <button class="bm-add-btn">Ajouter au panier</button>
+          </div>
+        {%- endfor -%}
+
+      {%- endif -%}
+    </div>
+
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Collection Style BM",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Titre de la section",
+      "default": "Les meilleures offres du moment"
+    },
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "Collection à afficher"
+    },
+    {
+      "type": "range",
+      "id": "products_to_show",
+      "min": 4,
+      "max": 12,
+      "step": 4,
+      "default": 4,
+      "label": "Nombre de produits à afficher"
+    },
+    {
+      "type": "range",
+      "id": "columns_desktop",
+      "min": 2,
+      "max": 5,
+      "step": 1,
+      "default": 4,
+      "label": "Nombre de colonnes sur ordinateur"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_view_all",
+      "label": "Afficher le lien 'Voir tout'",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "view_all_text",
+      "label": "Texte du lien",
+      "default": "Voir toutes les offres"
+    },
+    {
+      "type": "header",
+      "content": "Style des cartes"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_badge",
+      "label": "Afficher le badge d'état",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "badge_text",
+      "label": "Texte du badge",
+      "default": "Parfait état"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Couleur d'arrière-plan de la section",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "padding_y",
+      "min": 20,
+      "max": 100,
+      "step": 10,
+      "unit": "px",
+      "label": "Espacement vertical",
+      "default": 60
+    }
+  ],
+  "presets": [
+    {
+      "name": "Collection Style BM"
+    }
+  ]
+}
+{% endschema %}

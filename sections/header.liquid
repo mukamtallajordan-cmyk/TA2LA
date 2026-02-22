@@ -1,0 +1,505 @@
+<style>
+  :root {
+    --shop-black: #000000;
+    --shop-white: #ffffff;
+    --shop-gray-light: #F0F0F0;
+    --shop-text-main: #000000;
+  }
+
+  /* --- Barre d'annonce (Top Bar) --- */
+  .shop-announcement {
+    background-color: var(--shop-black);
+    color: var(--shop-white);
+    text-align: center;
+    padding: 10px 5%;
+    font-size: 0.85rem;
+    font-weight: 400;
+    position: relative;
+    z-index: 501;
+  }
+  .shop-announcement a {
+    color: var(--shop-white);
+    font-weight: 700;
+    text-decoration: underline;
+    margin-left: 5px;
+  }
+  .shop-announcement__close {
+    position: absolute;
+    right: 5%;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: var(--shop-white);
+    cursor: pointer;
+    font-size: 1.2rem;
+    padding: 0;
+  }
+
+  /* --- Header Principal --- */
+  .shop-header-wrapper {
+    background-color: var(--shop-white);
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+    position: relative;
+    z-index: 500;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+  }
+
+  {%- if section.settings.enable_sticky_header -%}
+    .shop-header-wrapper {
+      position: sticky;
+      top: 0;
+    }
+  {%- endif -%}
+
+  .shop-header {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 15px 5%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 30px;
+  }
+
+  /* 1. Logo */
+  .shop-header__logo {
+    font-size: 2rem;
+    font-weight: 900;
+    color: var(--shop-text-main);
+    text-decoration: none;
+    letter-spacing: -1px;
+    flex-shrink: 0;
+  }
+  .shop-header__logo img {
+    max-width: {{ section.settings.logo_width }}px;
+    height: auto;
+    display: block;
+  }
+
+  /* 2. Navigation Desktop */
+  .shop-header__nav {
+    display: flex;
+    align-items: center;
+    gap: 25px;
+    margin-right: auto; /* Pousse la barre de recherche vers la droite */
+  }
+
+  .shop-nav__item {
+    position: relative;
+    list-style: none;
+  }
+
+  .shop-nav__link {
+    text-decoration: none;
+    color: var(--shop-text-main);
+    font-size: 1rem;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    transition: opacity 0.2s ease;
+  }
+  .shop-nav__link:hover {
+    opacity: 0.6;
+  }
+
+  /* Dropdown (Sous-menu) */
+  .shop-nav__dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background: var(--shop-white);
+    min-width: 200px;
+    padding: 15px 0;
+    border-radius: 8px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+    border: 1px solid rgba(0,0,0,0.05);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(10px);
+    transition: all 0.2s ease;
+    z-index: 10;
+    list-style: none;
+  }
+  .shop-nav__item:hover .shop-nav__dropdown {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+  }
+  .shop-nav__dropdown a {
+    display: block;
+    padding: 8px 20px;
+    color: #444;
+    text-decoration: none;
+    font-size: 0.95rem;
+  }
+  .shop-nav__dropdown a:hover {
+    color: var(--shop-black);
+    font-weight: 600;
+    background-color: #f9f9f9;
+  }
+
+  /* 3. Barre de recherche (Pillule Grise) */
+  .shop-header__search {
+    flex-grow: 1;
+    max-width: 500px;
+  }
+  .shop-search__form {
+    position: relative;
+    width: 100%;
+    display: flex;
+    align-items: center;
+  }
+  .shop-search__icon {
+    position: absolute;
+    left: 15px;
+    width: 20px;
+    height: 20px;
+    fill: #666;
+    pointer-events: none;
+  }
+  .shop-search__input {
+    width: 100%;
+    background-color: var(--shop-gray-light);
+    border: none;
+    border-radius: 50px;
+    padding: 12px 20px 12px 45px; /* Espace pour l'icône à gauche */
+    font-size: 0.95rem;
+    color: var(--shop-black);
+    outline: none;
+    transition: background-color 0.2s;
+  }
+  .shop-search__input:focus {
+    background-color: #e5e5e5;
+  }
+
+  /* 4. Icônes (Droite) */
+  .shop-header__icons {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    flex-shrink: 0;
+  }
+
+  .shop-icon-btn {
+    color: var(--shop-text-main);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    background: none;
+    border: none;
+    cursor: pointer;
+  }
+  .shop-icon-btn svg {
+    width: 24px;
+    height: 24px;
+    stroke-width: 2;
+  }
+
+  .shop-cart-bubble {
+    position: absolute;
+    top: -6px;
+    right: -8px;
+    background-color: var(--shop-black);
+    color: var(--shop-white);
+    font-size: 0.65rem;
+    font-weight: 800;
+    min-width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 4px;
+  }
+
+  /* --- Mobile --- */
+  .shop-mobile-menu-btn {
+    display: none;
+  }
+  .shop-mobile-search-btn {
+    display: none;
+  }
+
+  @media (max-width: 990px) {
+    .shop-header__nav {
+      display: none; /* Cache le menu texte */
+    }
+    .shop-header__search {
+      display: none; /* Cache la grosse barre, remplacée par une icône */
+    }
+    
+    .shop-header {
+      padding: 15px 5%;
+    }
+    
+    .shop-mobile-menu-btn {
+      display: block;
+      margin-right: 15px;
+    }
+    .shop-mobile-search-btn {
+      display: block;
+    }
+    
+    .shop-header__logo {
+      flex-grow: 1;
+      font-size: 1.8rem;
+    }
+  }
+
+  /* --- Tiroir Mobile (Drawer) --- */
+  .shop-drawer {
+    position: fixed;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    max-width: 350px;
+    height: 100vh;
+    background: #fff;
+    z-index: 1000;
+    transition: left 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 5px 0 20px rgba(0,0,0,0.05);
+  }
+  .shop-drawer.is-open { left: 0; }
+  
+  .shop-drawer__header {
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #eee;
+  }
+  .shop-drawer__content {
+    padding: 20px;
+    overflow-y: auto;
+  }
+  .shop-drawer__nav {
+    list-style: none;
+    padding: 0; margin: 0;
+    display: flex; flex-direction: column; gap: 20px;
+  }
+  .shop-drawer__nav a {
+    text-decoration: none;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #000;
+  }
+  .shop-drawer__subnav {
+    list-style: none;
+    padding-left: 15px; margin-top: 15px;
+    display: flex; flex-direction: column; gap: 15px;
+    border-left: 2px solid #eee;
+  }
+  .shop-drawer__subnav a {
+    font-size: 1rem;
+    font-weight: 400;
+    color: #555;
+  }
+  
+  .shop-overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100vh;
+    background: rgba(0,0,0,0.4); z-index: 999;
+    opacity: 0; visibility: hidden; transition: opacity 0.3s;
+  }
+  .shop-overlay.is-active { opacity: 1; visibility: visible; }
+</style>
+
+{%- if section.settings.show_announcement -%}
+  <div class="shop-announcement" id="ShopAnnouncement">
+    {{ section.settings.announcement_text }}
+    {%- if section.settings.announcement_link_text != blank -%}
+      <a href="{{ section.settings.announcement_link }}">{{ section.settings.announcement_link_text }}</a>
+    {%- endif -%}
+    <button class="shop-announcement__close" onclick="document.getElementById('ShopAnnouncement').style.display='none'">&times;</button>
+  </div>
+{%- endif -%}
+
+<div class="shop-header-wrapper">
+  <header class="shop-header">
+    
+    <button class="shop-icon-btn shop-mobile-menu-btn" id="OpenShopMenu" aria-label="Menu">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+    </button>
+
+    <a href="{{ routes.root_url }}" class="shop-header__logo">
+      {%- if section.settings.logo != blank -%}
+        <img src="{{ section.settings.logo | image_url: width: section.settings.logo_width }}" alt="{{ shop.name }}">
+      {%- else -%}
+        SHOP.CO
+      {%- endif -%}
+    </a>
+
+    <nav class="shop-header__nav">
+      {%- for link in linklists[section.settings.menu].links -%}
+        <li class="shop-nav__item">
+          <a href="{{ link.url }}" class="shop-nav__link">
+            {{ link.title }}
+            {%- if link.links != blank -%}
+              <svg width="10" height="6" viewBox="0 0 10 6" fill="none"><path d="M1 1L5 5L9 1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            {%- endif -%}
+          </a>
+          
+          {%- if link.links != blank -%}
+            <ul class="shop-nav__dropdown">
+              {%- for childlink in link.links -%}
+                <li><a href="{{ childlink.url }}">{{ childlink.title }}</a></li>
+              {%- endfor -%}
+            </ul>
+          {%- endif -%}
+        </li>
+      {%- endfor -%}
+    </nav>
+
+    <div class="shop-header__search">
+      <form action="{{ routes.search_url }}" method="get" class="shop-search__form" role="search">
+        <svg class="shop-search__icon" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+        <input type="text" name="q" class="shop-search__input" placeholder="Search for products..." value="{{ search.terms | escape }}">
+        <input type="hidden" name="options[prefix]" value="last">
+      </form>
+    </div>
+
+    <div class="shop-header__icons">
+      {% render 'localization-form' %}
+
+      <a href="{{ routes.search_url }}" class="shop-icon-btn shop-mobile-search-btn" aria-label="Recherche">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+      </a>
+
+      <a href="{{ routes.cart_url }}" class="shop-icon-btn" aria-label="Panier">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
+        {%- if cart != empty -%}
+          <span class="shop-cart-bubble cart-count-bubble">{{ cart.item_count }}</span>
+        {%- endif -%}
+      </a>
+
+      {%- if shop.customer_accounts_enabled -%}
+        <a href="/account" class="shop-icon-btn" aria-label="Compte">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+        </a>
+      {%- endif -%}
+    </div>
+
+  </header>
+</div>
+
+<div class="shop-overlay" id="ShopOverlay"></div>
+<div class="shop-drawer" id="ShopMobileDrawer">
+  <div class="shop-drawer__header">
+    <span class="shop-header__logo">SHOP.CO</span>
+    <button class="shop-icon-btn" id="CloseShopMenu" aria-label="Fermer">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+    </button>
+  </div>
+  <div class="shop-drawer__content">
+    <ul class="shop-drawer__nav">
+      {%- for link in linklists[section.settings.menu].links -%}
+        <li>
+          <a href="{{ link.url }}">{{ link.title }}</a>
+          {%- if link.links != blank -%}
+            <ul class="shop-drawer__subnav">
+              {%- for childlink in link.links -%}
+                <li><a href="{{ childlink.url }}">{{ childlink.title }}</a></li>
+              {%- endfor -%}
+            </ul>
+          {%- endif -%}
+        </li>
+      {%- endfor -%}
+    </ul>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const btnOpen = document.getElementById('OpenShopMenu');
+    const btnClose = document.getElementById('CloseShopMenu');
+    const drawer = document.getElementById('ShopMobileDrawer');
+    const overlay = document.getElementById('ShopOverlay');
+
+    function openMenu() {
+      drawer.classList.add('is-open');
+      overlay.classList.add('is-active');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeMenu() {
+      drawer.classList.remove('is-open');
+      overlay.classList.remove('is-active');
+      document.body.style.overflow = '';
+    }
+
+    if(btnOpen) btnOpen.addEventListener('click', openMenu);
+    if(btnClose) btnClose.addEventListener('click', closeMenu);
+    if(overlay) overlay.addEventListener('click', closeMenu);
+  });
+</script>
+
+{% schema %}
+{
+  "name": "Header Style Shop.co",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "enable_sticky_header",
+      "label": "Garder l'en-tête fixé en haut",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Barre d'annonce"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_announcement",
+      "label": "Afficher la barre noire",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "announcement_text",
+      "label": "Texte principal",
+      "default": "Sign up and get 20% off to your first order."
+    },
+    {
+      "type": "text",
+      "id": "announcement_link_text",
+      "label": "Texte du lien",
+      "default": "Sign Up Now"
+    },
+    {
+      "type": "url",
+      "id": "announcement_link",
+      "label": "Lien de la barre"
+    },
+    {
+      "type": "header",
+      "content": "Logo et Menu"
+    },
+    {
+      "type": "image_picker",
+      "id": "logo",
+      "label": "Logo (Optionnel, le texte SHOP.CO s'affiche par défaut)"
+    },
+    {
+      "type": "range",
+      "id": "logo_width",
+      "min": 80,
+      "max": 250,
+      "step": 10,
+      "default": 150,
+      "unit": "px",
+      "label": "Largeur du logo"
+    },
+    {
+      "type": "link_list",
+      "id": "menu",
+      "default": "main-menu",
+      "label": "Menu principal"
+    }
+  ]
+}
+{% endschema %}

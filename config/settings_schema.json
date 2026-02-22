@@ -1,0 +1,60 @@
+[
+  {
+    "name": "theme_info",
+    "theme_name": "TA2LA Premium",
+    "theme_author": "Expert Shopify",
+    "theme_version": "1.0.0",
+    "theme_documentation_url": "https://ta2la.myshopify.com",
+    "theme_support_url": "https://ta2la.myshopify.com"
+  },
+  {
+    "name": "Couleurs",
+    "settings": [
+      {
+        "type": "color",
+        "id": "color_primary",
+        "label": "Couleur principale (texte)",
+        "default": "#111111"
+      },
+      {
+        "type": "color",
+        "id": "color_background",
+        "label": "Couleur d'arrière-plan",
+        "default": "#FAFAFA"
+      },
+      {
+        "type": "color",
+        "id": "color_button",
+        "label": "Couleur des boutons (CTA)",
+        "default": "#000000"
+      },
+      {
+        "type": "color",
+        "id": "color_button_text",
+        "label": "Texte des boutons",
+        "default": "#FFFFFF"
+      }
+    ]
+  },
+  {
+    "name": "Réseaux Sociaux",
+    "settings": [
+      {
+        "type": "text",
+        "id": "social_instagram_link",
+        "label": "Lien Instagram",
+        "info": "Ex: https://instagram.com/ta2la"
+      },
+      {
+        "type": "text",
+        "id": "social_facebook_link",
+        "label": "Lien Facebook"
+      },
+      {
+        "type": "text",
+        "id": "social_tiktok_link",
+        "label": "Lien TikTok"
+      }
+    ]
+  }
+]

@@ -1,0 +1,499 @@
+<style>
+  .shop-collection-page {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 40px 5% 80px 5%;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+  }
+
+  /* --- Fil d'Ariane & Titre --- */
+  .shop-collection__header {
+    margin-bottom: 40px;
+  }
+  .shop-breadcrumb {
+    font-size: 0.95rem;
+    color: #666;
+    margin-bottom: 20px;
+  }
+  .shop-breadcrumb a {
+    color: #666;
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  .shop-breadcrumb a:hover { color: #000; }
+  .shop-breadcrumb span { margin: 0 8px; }
+
+  .shop-collection__title {
+    font-size: clamp(2.5rem, 4vw, 3.5rem);
+    font-weight: 900;
+    color: #000;
+    margin: 0 0 10px 0;
+    text-transform: uppercase;
+    letter-spacing: -1px;
+    line-height: 1.1;
+  }
+  .shop-collection__desc {
+    font-size: 1.05rem;
+    color: #555;
+    max-width: 800px;
+    margin: 0;
+  }
+
+  /* --- Layout : Barre d'outils (Tris & Infos) --- */
+  .shop-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #eee;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+    gap: 15px;
+  }
+  
+  .shop-toolbar__count {
+    font-size: 1rem;
+    color: #666;
+    font-weight: 500;
+  }
+  .shop-toolbar__count strong { color: #000; }
+
+  .shop-sort {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .shop-sort label {
+    font-size: 0.95rem;
+    color: #666;
+    font-weight: 600;
+  }
+  .shop-sort select {
+    padding: 8px 30px 8px 15px;
+    font-size: 1rem;
+    font-weight: 700;
+    border: none;
+    background-color: #F0F0F0;
+    border-radius: 50px;
+    cursor: pointer;
+    outline: none;
+    appearance: none;
+    background-image: url('data:image/svg+xml;utf8,<svg viewBox="0 0 24 24" fill="%23000" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>');
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+  }
+
+  /* Bouton filtre mobile */
+  .shop-filter-toggle {
+    display: none;
+    background: #000;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 50px;
+    font-weight: 700;
+    cursor: pointer;
+    align-items: center;
+    gap: 8px;
+  }
+  .shop-filter-toggle svg { width: 18px; height: 18px; fill: #fff; }
+
+  /* --- Layout : Filtres (Gauche) + Grille (Droite) --- */
+  .shop-layout {
+    display: grid;
+    grid-template-columns: 260px 1fr;
+    gap: 40px;
+    align-items: start;
+  }
+
+  /* --- Filtres (Sidebar) --- */
+  .shop-filters {
+    position: sticky;
+    top: 100px;
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+  }
+
+  .shop-filter-group {
+    border-bottom: 1px solid #eee;
+    padding-bottom: 20px;
+  }
+  .shop-filter-group:last-child {
+    border-bottom: none;
+  }
+  
+  .shop-filter__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    font-weight: 800;
+    font-size: 1.1rem;
+    color: #000;
+    list-style: none;
+    text-transform: uppercase;
+  }
+  .shop-filter__header::-webkit-details-marker { display: none; }
+  
+  .shop-filter__list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding-top: 15px;
+    margin: 0;
+    list-style: none;
+  }
+
+  /* Checkbox personnalisée */
+  .shop-filter__item label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    font-size: 0.95rem;
+    color: #444;
+    transition: color 0.2s;
+  }
+  .shop-filter__item label:hover { color: #000; }
+  .shop-filter__item input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: #000;
+    cursor: pointer;
+  }
+
+  /* Filtre Prix */
+  .shop-filter__price {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding-top: 15px;
+  }
+  .shop-filter__price input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    outline: none;
+  }
+  .shop-filter__price input:focus { border-color: #000; }
+
+  /* Bouton d'application mobile */
+  .shop-filters__apply {
+    display: none;
+    width: 100%;
+    background: #000;
+    color: #fff;
+    border: none;
+    padding: 15px;
+    border-radius: 50px;
+    font-weight: 700;
+    margin-top: 20px;
+    cursor: pointer;
+  }
+
+  /* --- Grille de Produits --- */
+  .shop-grid {
+    display: grid;
+    grid-template-columns: repeat({{ section.settings.columns_desktop }}, 1fr);
+    gap: 30px;
+  }
+
+  /* --- Pagination --- */
+  .shop-pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin-top: 60px;
+    padding-top: 40px;
+    border-top: 1px solid #eee;
+  }
+  .shop-pagination__item {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    font-weight: 700;
+    color: #000;
+    text-decoration: none;
+    transition: background-color 0.2s;
+  }
+  .shop-pagination__item:hover {
+    background-color: #F0F0F0;
+  }
+  .shop-pagination__item.is-current {
+    background-color: #000;
+    color: #fff;
+    pointer-events: none;
+  }
+
+  /* --- Responsive Mobile --- */
+  @media (max-width: 900px) {
+    .shop-filter-toggle {
+      display: flex;
+    }
+    .shop-layout {
+      grid-template-columns: 1fr;
+      gap: 20px;
+    }
+    
+    /* Les filtres se cachent par défaut sur mobile */
+    .shop-filters-wrapper {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100vh;
+      background: #fff;
+      z-index: 10000;
+      overflow-y: auto;
+      padding: 20px;
+    }
+    .shop-filters-wrapper.is-open {
+      display: block;
+    }
+    .shop-filters__apply {
+      display: block;
+    }
+    
+    /* Grille Mobile */
+    .shop-grid {
+      grid-template-columns: repeat({{ section.settings.columns_mobile }}, 1fr);
+      gap: 15px;
+    }
+  }
+</style>
+
+<div class="shop-collection-page">
+  
+  <header class="shop-collection__header">
+    <nav class="shop-breadcrumb">
+      <a href="{{ routes.root_url }}">Home</a> <span>></span>
+      <span style="color: #000; font-weight: 600;">{{ collection.title }}</span>
+    </nav>
+    <h1 class="shop-collection__title">{{ collection.title }}</h1>
+    {%- if collection.description != blank -%}
+      <div class="shop-collection__desc">{{ collection.description }}</div>
+    {%- endif -%}
+  </header>
+
+  <div class="shop-layout">
+    
+    <div class="shop-filters-wrapper" id="ShopFiltersWrapper">
+      <form class="shop-filters" id="ShopFiltersForm">
+        
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+          <h2 style="font-size: 1.2rem; font-weight: 800; margin: 0; text-transform: uppercase;">Filters</h2>
+          <button type="button" class="shop-filter-toggle" id="CloseMobileFilters" style="background: none; color: #000; padding: 0;">&times; Fermer</button>
+        </div>
+
+        {%- for filter in collection.filters -%}
+          <details class="shop-filter-group" open>
+            <summary class="shop-filter__header">
+              <span>{{ filter.label }}</span>
+              <span>+</span>
+            </summary>
+            
+            <div class="shop-filter__content">
+              {%- case filter.type -%}
+                
+                {%- when 'list' -%}
+                  <ul class="shop-filter__list">
+                    {%- for filter_value in filter.values -%}
+                      <li class="shop-filter__item">
+                        <label for="Filter-{{ filter.param_name }}-{{ forloop.index }}" {% if filter_value.count == 0 and filter_value.active == false %}style="opacity: 0.4;"{% endif %}>
+                          <input type="checkbox"
+                                 name="{{ filter_value.param_name }}"
+                                 value="{{ filter_value.value }}"
+                                 id="Filter-{{ filter.param_name }}-{{ forloop.index }}"
+                                 {% if filter_value.active %}checked{% endif %}
+                                 {% if filter_value.count == 0 and filter_value.active == false %}disabled{% endif %}>
+                          {{ filter_value.label }} ({{ filter_value.count }})
+                        </label>
+                      </li>
+                    {%- endfor -%}
+                  </ul>
+
+                {%- when 'price_range' -%}
+                  <div class="shop-filter__price">
+                    <input type="number" 
+                           name="{{ filter.min_value.param_name }}" 
+                           id="Filter-{{ filter.min_value.param_name }}" 
+                           {% if filter.min_value.value %}value="{{ filter.min_value.value | money_without_currency | replace: ',', '' }}"{% endif %} 
+                           placeholder="0" 
+                           min="0" 
+                           max="{{ filter.range_max | money_without_currency | replace: ',', '' }}">
+                    <span>-</span>
+                    <input type="number" 
+                           name="{{ filter.max_value.param_name }}" 
+                           id="Filter-{{ filter.max_value.param_name }}" 
+                           {% if filter.max_value.value %}value="{{ filter.max_value.value | money_without_currency | replace: ',', '' }}"{% endif %} 
+                           placeholder="{{ filter.range_max | money_without_currency | replace: ',', '' }}" 
+                           min="0" 
+                           max="{{ filter.range_max | money_without_currency | replace: ',', '' }}">
+                  </div>
+                  
+              {%- endcase -%}
+            </div>
+          </details>
+        {%- endfor -%}
+
+        <button type="button" class="shop-filters__apply" id="ApplyMobileFilters">Appliquer les filtres</button>
+        <noscript>
+          <button type="submit" class="shop-filters__apply" style="display: block;">Appliquer</button>
+        </noscript>
+      </form>
+    </div>
+
+    <div class="shop-main">
+      
+      <div class="shop-toolbar">
+        <div class="shop-toolbar__count">
+          Showing <strong>{{ collection.products_count }}</strong> Products
+        </div>
+        
+        <div style="display: flex; gap: 15px; align-items: center;">
+          <button type="button" class="shop-filter-toggle" id="OpenMobileFilters">
+            <svg viewBox="0 0 24 24"><path d="M10 18h4v-2h-4v2zM3 6v2h18V6H3zm3 7h12v-2H6v2z"/></svg>
+            Filters
+          </button>
+
+          <div class="shop-sort">
+            <label for="SortBy">Sort by:</label>
+            <select name="sort_by" id="SortBy" form="ShopFiltersForm">
+              {%- for option in collection.sort_options -%}
+                <option value="{{ option.value }}" {% if option.value == collection.sort_by %}selected="selected"{% endif %}>
+                  {{ option.name }}
+                </option>
+              {%- endfor -%}
+            </select>
+          </div>
+        </div>
+      </div>
+
+      {% paginate collection.products by section.settings.products_per_page %}
+        
+        {%- if collection.products.size == 0 -%}
+          <div style="text-align: center; padding: 60px 0; font-size: 1.2rem; color: #666; background: #f9f9f9; border-radius: 20px;">
+            Aucun produit ne correspond à vos filtres.
+          </div>
+        {%- else -%}
+          <div class="shop-grid">
+            {%- for product in collection.products -%}
+              {% render 'product-card', product: product %}
+            {%- endfor -%}
+          </div>
+        {%- endif -%}
+
+        {%- if paginate.pages > 1 -%}
+          <nav class="shop-pagination">
+            {%- if paginate.previous -%}
+              <a href="{{ paginate.previous.url }}" class="shop-pagination__item">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"></polyline></svg>
+              </a>
+            {%- endif -%}
+
+            {%- for part in paginate.parts -%}
+              {%- if part.is_link -%}
+                <a href="{{ part.url }}" class="shop-pagination__item">{{ part.title }}</a>
+              {%- else -%}
+                <span class="shop-pagination__item {% if part.title == paginate.current_page %}is-current{% endif %}">{{ part.title }}</span>
+              {%- endif -%}
+            {%- endfor -%}
+
+            {%- if paginate.next -%}
+              <a href="{{ paginate.next.url }}" class="shop-pagination__item">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
+              </a>
+            {%- endif -%}
+          </nav>
+        {%- endif -%}
+
+      {% endpaginate %}
+    </div>
+
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    
+    // 1. Auto-submit des filtres (Desktop)
+    const filtersForm = document.getElementById('ShopFiltersForm');
+    if (filtersForm) {
+      // Écoute les changements sur les cases à cocher, champs prix et liste déroulante de tri
+      filtersForm.addEventListener('change', function(e) {
+        // Sur mobile, on ne soumet pas automatiquement pour laisser l'utilisateur cocher plusieurs cases
+        if (window.innerWidth > 900) {
+          filtersForm.submit();
+        }
+      });
+    }
+
+    // 2. Gestion du menu filtres Mobile
+    const btnOpenFilters = document.getElementById('OpenMobileFilters');
+    const btnCloseFilters = document.getElementById('CloseMobileFilters');
+    const btnApplyFilters = document.getElementById('ApplyMobileFilters');
+    const filtersWrapper = document.getElementById('ShopFiltersWrapper');
+
+    if(btnOpenFilters && filtersWrapper) {
+      btnOpenFilters.addEventListener('click', () => {
+        filtersWrapper.classList.add('is-open');
+        document.body.style.overflow = 'hidden'; // Empêche le scroll derrière
+      });
+      
+      const closeFilters = () => {
+        filtersWrapper.classList.remove('is-open');
+        document.body.style.overflow = '';
+      };
+
+      if(btnCloseFilters) btnCloseFilters.addEventListener('click', closeFilters);
+      
+      // Sur mobile, le bouton "Appliquer" soumet le formulaire
+      if(btnApplyFilters) {
+        btnApplyFilters.addEventListener('click', () => {
+          filtersForm.submit();
+        });
+      }
+    }
+  });
+</script>
+
+{% schema %}
+{
+  "name": "Page de Collection",
+  "settings": [
+    {
+      "type": "range",
+      "id": "products_per_page",
+      "min": 12,
+      "max": 48,
+      "step": 4,
+      "default": 16,
+      "label": "Produits par page"
+    },
+    {
+      "type": "range",
+      "id": "columns_desktop",
+      "min": 2,
+      "max": 5,
+      "step": 1,
+      "default": 3,
+      "label": "Nombre de colonnes sur ordinateur"
+    },
+    {
+      "type": "select",
+      "id": "columns_mobile",
+      "options": [
+        { "value": "1", "label": "1 par ligne" },
+        { "value": "2", "label": "2 par ligne" }
+      ],
+      "default": "2",
+      "label": "Nombre de colonnes sur mobile"
+    }
+  ]
+}
+{% endschema %}

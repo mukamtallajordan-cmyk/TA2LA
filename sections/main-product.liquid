@@ -1,0 +1,730 @@
+<style>
+  :root {
+    --shop-bg: #ffffff;
+    --shop-gray: #F0F0F0;
+    --shop-text: #000000;
+    --shop-muted: #666666;
+    --shop-red-light: #FFEDED;
+    --shop-red-text: #FF3333;
+    --shop-yellow: #FFC633;
+  }
+
+  .shop-product-page {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 30px 5% 80px 5%;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+  }
+
+  /* --- Fil d'Ariane (Breadcrumbs) --- */
+  .shop-breadcrumb {
+    font-size: 0.95rem;
+    color: var(--shop-muted);
+    margin-bottom: 30px;
+  }
+  .shop-breadcrumb a {
+    color: var(--shop-muted);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  .shop-breadcrumb a:hover {
+    color: var(--shop-text);
+  }
+  .shop-breadcrumb span {
+    margin: 0 8px;
+  }
+
+  /* --- Layout Principal --- */
+  .shop-product-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 50px;
+    margin-bottom: 80px;
+  }
+
+  /* --- GALERIE D'IMAGES --- */
+  .shop-gallery {
+    display: flex;
+    gap: 20px;
+    height: 600px; /* Fixe la hauteur pour un bel alignement */
+  }
+
+  .shop-gallery__thumbnails {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    width: 150px;
+    overflow-y: auto;
+    /* Cache la barre de défilement */
+    scrollbar-width: none; 
+    -ms-overflow-style: none;
+  }
+  .shop-gallery__thumbnails::-webkit-scrollbar { display: none; }
+
+  .shop-gallery__thumb {
+    width: 100%;
+    height: 150px;
+    border-radius: 20px;
+    background-color: var(--shop-gray);
+    border: 2px solid transparent;
+    cursor: pointer;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+  .shop-gallery__thumb.is-active {
+    border-color: var(--shop-text);
+  }
+  .shop-gallery__thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .shop-gallery__main {
+    flex-grow: 1;
+    background-color: var(--shop-gray);
+    border-radius: 20px;
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .shop-gallery__main img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: opacity 0.3s ease;
+  }
+
+  /* --- INFORMATIONS PRODUIT --- */
+  .shop-info {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .shop-info__title {
+    font-size: clamp(2rem, 3.5vw, 3.5rem);
+    font-weight: 900;
+    color: var(--shop-text);
+    margin: 0 0 10px 0;
+    text-transform: uppercase;
+    line-height: 1.1;
+    letter-spacing: -1px;
+  }
+
+  /* Étoiles d'avis */
+  .shop-info__reviews {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  .shop-info__stars {
+    color: var(--shop-yellow);
+    display: flex;
+    gap: 3px;
+  }
+  .shop-info__stars svg { width: 18px; height: 18px; fill: currentColor; }
+  .shop-info__review-count {
+    font-size: 0.95rem;
+    color: var(--shop-muted);
+  }
+
+  /* Prix */
+  .shop-info__pricing {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 20px;
+  }
+  .shop-info__price {
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--shop-text);
+  }
+  .shop-info__compare-price {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #B3B3B3;
+    text-decoration: line-through;
+  }
+  .shop-info__badge {
+    background-color: var(--shop-red-light);
+    color: var(--shop-red-text);
+    padding: 5px 15px;
+    border-radius: 50px;
+    font-size: 1rem;
+    font-weight: 700;
+  }
+
+  .shop-info__desc {
+    font-size: 1.05rem;
+    color: var(--shop-muted);
+    line-height: 1.6;
+    margin-bottom: 30px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 30px;
+  }
+
+  /* --- VARIANTS (Couleurs & Tailles) --- */
+  .shop-variants {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+    margin-bottom: 30px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 30px;
+  }
+
+  .shop-option__name {
+    font-size: 1.05rem;
+    color: var(--shop-muted);
+    margin: 0 0 10px 0;
+  }
+
+  /* Grilles d'options */
+  .shop-option__values {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+  }
+
+  /* Cacher les boutons radio natifs */
+  .shop-option__values input[type="radio"] {
+    display: none;
+  }
+
+  /* Pastilles de Couleurs */
+  .shop-swatch--color {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 2px solid transparent;
+    box-shadow: inset 0 0 0 1px rgba(0,0,0,0.1);
+    position: relative;
+    transition: transform 0.2s;
+  }
+  .shop-swatch--color:hover {
+    transform: scale(1.1);
+  }
+  /* La coche qui apparaît quand sélectionné */
+  .shop-swatch--color::after {
+    content: '';
+    width: 12px;
+    height: 8px;
+    border-left: 2px solid #fff;
+    border-bottom: 2px solid #fff;
+    transform: rotate(-45deg);
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+  /* Coche noire si la couleur est blanche */
+  .shop-swatch--color[data-color="white"]::after, 
+  .shop-swatch--color[data-color="blanc"]::after, 
+  .shop-swatch--color[data-color="#ffffff"]::after {
+    border-color: #000;
+  }
+  input[type="radio"]:checked + .shop-swatch--color::after {
+    opacity: 1;
+  }
+  input[type="radio"]:checked + .shop-swatch--color {
+    border-color: #000;
+    padding: 2px; /* Effet de bordure extérieure */
+    background-clip: content-box;
+  }
+
+  /* Pilules de Tailles */
+  .shop-swatch--pill {
+    padding: 12px 25px;
+    background-color: var(--shop-gray);
+    color: var(--shop-muted);
+    border-radius: 50px;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .shop-swatch--pill:hover {
+    background-color: #e0e0e0;
+  }
+  input[type="radio"]:checked + .shop-swatch--pill {
+    background-color: var(--shop-text);
+    color: #fff;
+    font-weight: 700;
+  }
+  /* Variante épuisée */
+  input[type="radio"].is-disabled + .shop-swatch--pill {
+    opacity: 0.5;
+    text-decoration: line-through;
+    cursor: not-allowed;
+  }
+
+  /* --- ACTIONS (Quantité & Ajout Panier) --- */
+  .shop-actions {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+  }
+
+  /* Sélecteur Quantité (Pilule) */
+  .shop-qty {
+    display: flex;
+    align-items: center;
+    background-color: var(--shop-gray);
+    border-radius: 50px;
+    height: 55px;
+    padding: 0 10px;
+  }
+  .shop-qty__btn {
+    background: none;
+    border: none;
+    width: 40px;
+    height: 100%;
+    font-size: 1.5rem;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: var(--shop-text);
+  }
+  .shop-qty__input {
+    width: 50px;
+    text-align: center;
+    background: transparent;
+    border: none;
+    font-size: 1.1rem;
+    font-weight: 700;
+    -moz-appearance: textfield;
+  }
+  .shop-qty__input::-webkit-outer-spin-button,
+  .shop-qty__input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  /* Bouton Ajouter au Panier */
+  .shop-add-btn {
+    flex-grow: 1;
+    height: 55px;
+    background-color: var(--shop-text);
+    color: #fff;
+    border: none;
+    border-radius: 50px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 0.2s, background-color 0.2s;
+  }
+  .shop-add-btn:hover {
+    background-color: #333;
+    transform: translateY(-2px);
+  }
+  .shop-add-btn:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  /* --- ONGLETS (TABS) --- */
+  .shop-tabs {
+    margin-top: 60px;
+  }
+  .shop-tabs__nav {
+    display: flex;
+    justify-content: space-around;
+    border-bottom: 1px solid #eee;
+    margin-bottom: 30px;
+  }
+  .shop-tabs__btn {
+    background: none;
+    border: none;
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--shop-muted);
+    padding: 15px 0;
+    cursor: pointer;
+    position: relative;
+    transition: color 0.3s;
+  }
+  .shop-tabs__btn.is-active {
+    color: var(--shop-text);
+  }
+  /* La barre noire sous l'onglet actif */
+  .shop-tabs__btn::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background-color: var(--shop-text);
+    transform: scaleX(0);
+    transition: transform 0.3s;
+  }
+  .shop-tabs__btn.is-active::after {
+    transform: scaleX(1);
+  }
+
+  .shop-tabs__content {
+    display: none;
+    font-size: 1.05rem;
+    color: var(--shop-muted);
+    line-height: 1.6;
+    animation: fadeIn 0.4s ease;
+  }
+  .shop-tabs__content.is-active {
+    display: block;
+  }
+  
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* --- RESPONSIVE MOBILE --- */
+  @media (max-width: 900px) {
+    .shop-product-grid {
+      grid-template-columns: 1fr;
+      gap: 30px;
+    }
+    .shop-gallery {
+      flex-direction: column-reverse; /* Miniatures en bas sur mobile */
+      height: auto;
+    }
+    .shop-gallery__thumbnails {
+      flex-direction: row;
+      width: 100%;
+      height: 100px;
+    }
+    .shop-gallery__thumb {
+      flex: 0 0 100px;
+      height: 100px;
+    }
+    .shop-gallery__main {
+      height: 400px;
+    }
+    .shop-info__title {
+      font-size: 2.2rem;
+    }
+    .shop-tabs__btn {
+      font-size: 1rem;
+      padding: 10px 0;
+    }
+  }
+  @media (max-width: 500px) {
+    .shop-actions {
+      flex-direction: column;
+      align-items: stretch;
+    }
+    .shop-qty {
+      justify-content: space-between;
+    }
+  }
+</style>
+
+<div class="shop-product-page">
+  
+  <nav class="shop-breadcrumb">
+    <a href="{{ routes.root_url }}">Home</a> <span>></span>
+    {%- if product.collections.size > 0 -%}
+      <a href="{{ product.collections.first.url }}">{{ product.collections.first.title }}</a> <span>></span>
+    {%- endif -%}
+    <span style="color: #000; font-weight: 500;">{{ product.title }}</span>
+  </nav>
+
+  <div class="shop-product-grid">
+    
+    <div class="shop-gallery">
+      <div class="shop-gallery__thumbnails">
+        {%- for image in product.images -%}
+          <div class="shop-gallery__thumb {% if forloop.first %}is-active{% endif %}" data-image-id="{{ image.id }}">
+            <img src="{{ image | image_url: width: 300 }}" alt="{{ image.alt | escape }}" loading="lazy">
+          </div>
+        {%- endfor -%}
+      </div>
+      
+      <div class="shop-gallery__main">
+        {%- if product.featured_image != blank -%}
+          <img id="ShopMainImage" src="{{ product.featured_image | image_url: width: 3840 }}" alt="{{ product.title | escape }}" loading="eager">
+        {%- else -%}
+          {{ 'product-1' | placeholder_svg_tag }}
+        {%- endif -%}
+      </div>
+    </div>
+
+    <div class="shop-info">
+      
+      <h1 class="shop-info__title">{{ product.title }}</h1>
+      
+      <div class="shop-info__reviews">
+        <div class="shop-info__stars">
+          <svg viewBox="0 0 24 24"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/></svg>
+          <svg viewBox="0 0 24 24"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/></svg>
+          <svg viewBox="0 0 24 24"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/></svg>
+          <svg viewBox="0 0 24 24"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/></svg>
+          <svg viewBox="0 0 24 24"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/></svg>
+        </div>
+        <span class="shop-info__review-count">4.5/5</span>
+      </div>
+
+      <div class="shop-info__pricing" id="ShopPriceContainer">
+        <span class="shop-info__price" id="ShopCurrentPrice">{{ product.selected_or_first_available_variant.price | money }}</span>
+        
+        {%- if product.selected_or_first_available_variant.compare_at_price > product.selected_or_first_available_variant.price -%}
+          <span class="shop-info__compare-price" id="ShopComparePrice">{{ product.selected_or_first_available_variant.compare_at_price | money }}</span>
+          {%- assign savings = product.selected_or_first_available_variant.compare_at_price | minus: product.selected_or_first_available_variant.price | times: 100.0 | divided_by: product.selected_or_first_available_variant.compare_at_price | round -%}
+          <span class="shop-info__badge" id="ShopDiscountBadge">-{{ savings }}%</span>
+        {%- endif -%}
+      </div>
+
+      <div class="shop-info__desc">
+        {%- if product.description != blank -%}
+          {{ product.description | strip_html | truncatewords: 30 }}
+        {%- else -%}
+          This graphic t-shirt is perfect for any occasion. Crafted from a soft and breathable fabric, it offers superior comfort and style.
+        {%- endif -%}
+      </div>
+
+      {% form 'product', product, id: 'ShopProductForm' %}
+        
+        <input type="hidden" name="id" id="ShopVariantId" value="{{ product.selected_or_first_available_variant.id }}">
+
+        {%- unless product.has_only_default_variant -%}
+          <div class="shop-variants">
+            {%- for option in product.options_with_values -%}
+              <div class="shop-option">
+                <p class="shop-option__name">{{ option.name }}</p>
+                <div class="shop-option__values">
+                  
+                  {%- assign option_name_downcase = option.name | downcase -%}
+                  {%- if option_name_downcase contains 'color' or option_name_downcase contains 'couleur' -%}
+                    
+                    {%- for value in option.values -%}
+                      <label>
+                        <input type="radio" 
+                               name="option{{ option.position }}" 
+                               value="{{ value | escape }}" 
+                               data-index="option{{ forloop.index }}"
+                               {% if option.selected_value == value %}checked{% endif %}>
+                        <span class="shop-swatch--color" style="background-color: {{ value | downcase }};" data-color="{{ value | downcase }}" title="{{ value }}"></span>
+                      </label>
+                    {%- endfor -%}
+
+                  {%- else -%}
+                    
+                    {%- for value in option.values -%}
+                      <label>
+                        <input type="radio" 
+                               name="option{{ option.position }}" 
+                               value="{{ value | escape }}"
+                               {% if option.selected_value == value %}checked{% endif %}>
+                        <span class="shop-swatch--pill">{{ value }}</span>
+                      </label>
+                    {%- endfor -%}
+
+                  {%- endif -%}
+
+                </div>
+              </div>
+            {%- endfor -%}
+          </div>
+        {%- endunless -%}
+
+        <div class="shop-actions">
+          <div class="shop-qty">
+            <button type="button" class="shop-qty__btn" onclick="this.nextElementSibling.stepDown()">-</button>
+            <input type="number" name="quantity" value="1" min="1" class="shop-qty__input" id="Quantity">
+            <button type="button" class="shop-qty__btn" onclick="this.previousElementSibling.stepUp()">+</button>
+          </div>
+
+          <button type="submit" class="shop-add-btn" id="ShopAddToCart" {% unless product.selected_or_first_available_variant.available %}disabled{% endunless %}>
+            {%- if product.selected_or_first_available_variant.available -%}
+              Add to Cart
+            {%- else -%}
+              Sold Out
+            {%- endif -%}
+          </button>
+        </div>
+
+      {% endform %}
+    </div>
+  </div>
+
+  <div class="shop-tabs">
+    <div class="shop-tabs__nav">
+      <button class="shop-tabs__btn is-active" data-tab="details">Product Details</button>
+      <button class="shop-tabs__btn" data-tab="reviews">Rating & Reviews</button>
+      <button class="shop-tabs__btn" data-tab="faq">FAQs</button>
+    </div>
+    
+    <div class="shop-tabs__content is-active" id="tab-details">
+      {{ product.description | default: "Détails complets du produit à rédiger dans l'éditeur Shopify." }}
+    </div>
+    
+    <div class="shop-tabs__content" id="tab-reviews">
+      <div id="shopify-product-reviews" data-id="{{ product.id }}">
+        <i>L'application d'avis s'affichera ici.</i>
+      </div>
+    </div>
+    
+    <div class="shop-tabs__content" id="tab-faq">
+      <h4>Livraison</h4>
+      <p>Toutes les commandes sont expédiées sous 24 à 48 heures. La livraison standard prend 3 à 5 jours ouvrés.</p>
+      <h4>Retours</h4>
+      <p>Vous disposez de 30 jours pour nous retourner les articles non portés et dans leur emballage d'origine.</p>
+    </div>
+  </div>
+
+</div>
+
+<script type="application/json" id="ShopVariantsJson">
+  [
+    {%- for variant in product.variants -%}
+      {
+        "id": {{ variant.id }},
+        "title": {{ variant.title | json }},
+        "option1": {{ variant.option1 | json }},
+        "option2": {{ variant.option2 | json }},
+        "option3": {{ variant.option3 | json }},
+        "price": "{{ variant.price | money }}",
+        "compare_at_price": {% if variant.compare_at_price > variant.price %}"{{ variant.compare_at_price | money }}"{% else %}null{% endif %},
+        "savings": {% if variant.compare_at_price > variant.price %}{{ variant.compare_at_price | minus: variant.price | times: 100.0 | divided_by: variant.compare_at_price | round }}{% else %}0{% endif %},
+        "available": {{ variant.available }},
+        "featured_image": {% if variant.featured_image %}{{ variant.featured_image | image_url: width: 3840 | json }}{% else %}null{% endif %}
+      }{% unless forloop.last %},{% endunless %}
+    {%- endfor -%}
+  ]
+</script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    
+    /* 1. LOGIQUE DE LA GALERIE D'IMAGES */
+    const mainImg = document.getElementById('ShopMainImage');
+    const thumbnails = document.querySelectorAll('.shop-gallery__thumb');
+    
+    thumbnails.forEach(thumb => {
+      thumb.addEventListener('click', function() {
+        // Enlever la classe active de toutes les miniatures
+        thumbnails.forEach(t => t.classList.remove('is-active'));
+        // Ajouter à celle cliquée
+        this.classList.add('is-active');
+        // Mettre à jour l'image principale
+        const newSrc = this.querySelector('img').src;
+        // Petit effet de fondu manuel
+        mainImg.style.opacity = '0';
+        setTimeout(() => {
+          mainImg.src = newSrc.replace('&width=300', '&width=3840'); // Utilise la haute résolution
+          mainImg.style.opacity = '1';
+        }, 150);
+      });
+    });
+
+    /* 2. LOGIQUE DES VARIANTS (Couleurs & Tailles) */
+    const form = document.getElementById('ShopProductForm');
+    const radios = form.querySelectorAll('input[type="radio"]');
+    const variantInput = document.getElementById('ShopVariantId');
+    const priceDisplay = document.getElementById('ShopCurrentPrice');
+    const comparePriceDisplay = document.getElementById('ShopComparePrice');
+    const badgeDisplay = document.getElementById('ShopDiscountBadge');
+    const addToCartBtn = document.getElementById('ShopAddToCart');
+    
+    // Récupérer le tableau de données des variants qu'on a créé en JSON juste au-dessus
+    const variantsDataRaw = document.getElementById('ShopVariantsJson').textContent;
+    const variants = JSON.parse(variantsDataRaw);
+
+    function getSelectedOptions() {
+      // Regarde quels boutons radio sont cochés actuellement
+      const checkedRadios = Array.from(radios).filter(radio => radio.checked);
+      return checkedRadios.map(radio => radio.value);
+    }
+
+    function updateProductData() {
+      const selectedOptions = getSelectedOptions();
+      
+      // Cherche le variant qui a exactement les options sélectionnées
+      const currentVariant = variants.find(variant => {
+        const variantOptions = [variant.option1, variant.option2, variant.option3].filter(Boolean);
+        // Vérifie que chaque option sélectionnée correspond au variant
+        return selectedOptions.every((val, index) => val === variantOptions[index]);
+      });
+
+      if (currentVariant) {
+        // MAJ ID
+        variantInput.value = currentVariant.id;
+        
+        // MAJ Bouton Ajout Panier
+        if (currentVariant.available) {
+          addToCartBtn.disabled = false;
+          addToCartBtn.textContent = 'Add to Cart';
+        } else {
+          addToCartBtn.disabled = true;
+          addToCartBtn.textContent = 'Sold Out';
+        }
+
+        // MAJ Prix
+        priceDisplay.textContent = currentVariant.price;
+        
+        // MAJ Badge de réduction et Prix barré
+        if (currentVariant.compare_at_price) {
+          if (!comparePriceDisplay) {
+            // S'il n'existait pas avant, il faudrait rafraîchir la page ou recréer les éléments, 
+            // pour faire simple on manipule ceux existants
+            window.location.reload(); 
+          } else {
+            comparePriceDisplay.style.display = 'inline';
+            comparePriceDisplay.textContent = currentVariant.compare_at_price;
+            if(badgeDisplay) {
+              badgeDisplay.style.display = 'inline-block';
+              badgeDisplay.textContent = '-' + currentVariant.savings + '%';
+            }
+          }
+        } else {
+          if (comparePriceDisplay) comparePriceDisplay.style.display = 'none';
+          if (badgeDisplay) badgeDisplay.style.display = 'none';
+        }
+
+        // MAJ Image (Si le variant a une image spécifique associée)
+        if (currentVariant.featured_image) {
+          mainImg.style.opacity = '0';
+          setTimeout(() => {
+            mainImg.src = currentVariant.featured_image;
+            mainImg.style.opacity = '1';
+          }, 150);
+        }
+      }
+    }
+
+    radios.forEach(radio => {
+      radio.addEventListener('change', updateProductData);
+    });
+
+    /* 3. LOGIQUE DES ONGLETS (TABS) */
+    const tabBtns = document.querySelectorAll('.shop-tabs__btn');
+    const tabContents = document.querySelectorAll('.shop-tabs__content');
+
+    tabBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        // Enlever is-active partout
+        tabBtns.forEach(b => b.classList.remove('is-active'));
+        tabContents.forEach(c => c.classList.remove('is-active'));
+        
+        // Ajouter is-active sur le clic
+        btn.classList.add('is-active');
+        document.getElementById('tab-' + btn.dataset.tab).classList.add('is-active');
+      });
+    });
+  });
+</script>
+
+{% schema %}
+{
+  "name": "Page Produit Style Shop",
+  "settings": []
+}
+{% endschema %}

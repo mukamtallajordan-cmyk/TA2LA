@@ -1,0 +1,298 @@
+<style>
+  .promo-banners-{{ section.id }} {
+    padding: 0 5% {{ section.settings.padding_bottom }}px 5%;
+    max-width: 1400px;
+    margin: 0 auto;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+  }
+
+  .promo-banners__grid {
+    display: grid;
+    grid-template-columns: repeat({{ section.blocks.size }}, 1fr);
+    gap: 30px;
+  }
+
+  .promo-card {
+    border-radius: 20px;
+    padding: 50px 40px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+    min-height: 320px;
+    text-decoration: none;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .promo-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+  }
+
+  /* --- Contenu Texte (au-dessus de l'image) --- */
+  .promo-card__content {
+    position: relative;
+    z-index: 2;
+    max-width: 60%; /* Laisse de la place pour l'image à droite */
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .promo-card__subtitle {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin: 0 0 5px 0;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .promo-card__title {
+    font-size: clamp(2rem, 3.5vw, 3.5rem);
+    font-weight: 900;
+    margin: 0 0 15px 0;
+    line-height: 1.1;
+  }
+  
+  /* L'effet de "stabilo" blanc derrière le texte, comme sur l'image */
+  .promo-card__title--highlight {
+    background: #fff;
+    color: #111;
+    padding: 0 10px;
+    border-radius: 8px;
+    display: inline-block;
+  }
+
+  .promo-card__desc {
+    font-size: 1rem;
+    line-height: 1.5;
+    margin: 0 0 25px 0;
+    opacity: 0.9;
+  }
+
+  .promo-card__btn {
+    background-color: #fff;
+    color: #111;
+    padding: 12px 30px;
+    border-radius: 50px;
+    font-weight: 800;
+    font-size: 0.95rem;
+    display: inline-block;
+    border: none;
+  }
+
+  /* Style de bouton transparent souligné (comme la 2ème bannière) */
+  .promo-card__btn--link {
+    background: transparent;
+    padding: 0;
+    text-decoration: underline;
+    text-underline-offset: 4px;
+    color: inherit;
+  }
+
+  /* --- Image (Positionnée à droite) --- */
+  .promo-card__image {
+    position: absolute;
+    right: -5%; /* L'image déborde un peu sur la droite pour le style */
+    bottom: -10%;
+    height: 110%; /* L'image prend toute la hauteur */
+    width: 55%;
+    object-fit: contain;
+    object-position: bottom right;
+    z-index: 1;
+    transition: transform 0.5s ease;
+  }
+
+  .promo-card:hover .promo-card__image {
+    transform: scale(1.05); /* L'image zoome un peu au survol */
+  }
+
+  /* --- Responsive --- */
+  @media (max-width: 900px) {
+    .promo-banners__grid {
+      grid-template-columns: 1fr; /* S'empilent sur mobile */
+      gap: 20px;
+    }
+    .promo-card {
+      padding: 40px 30px;
+      min-height: 280px;
+    }
+    .promo-card__content {
+      max-width: 65%;
+    }
+    .promo-card__image {
+      height: 100%;
+      right: -10px;
+    }
+  }
+  
+  @media (max-width: 500px) {
+    .promo-card__content {
+      max-width: 100%; /* Le texte prend toute la largeur */
+      text-align: center;
+      align-items: center;
+    }
+    .promo-card__image {
+      opacity: 0.2; /* On rend l'image semi-transparente pour pouvoir lire le texte par-dessus */
+      right: 0;
+      width: 100%;
+    }
+  }
+</style>
+
+<div class="promo-banners-{{ section.id }}">
+  <div class="promo-banners__grid">
+    
+    {%- for block in section.blocks -%}
+      <a href="{{ block.settings.link }}" class="promo-card" style="background-color: {{ block.settings.bg_color }}; color: {{ block.settings.text_color }};" {{ block.shopify_attributes }}>
+        
+        <div class="promo-card__content">
+          {%- if block.settings.subtitle != blank -%}
+            <p class="promo-card__subtitle">{{ block.settings.subtitle | escape }}</p>
+          {%- endif -%}
+
+          {%- if block.settings.title != blank -%}
+            <h3 class="promo-card__title {% if block.settings.highlight_title %}promo-card__title--highlight{% endif %}">
+              {{ block.settings.title | escape }}
+            </h3>
+          {%- endif -%}
+
+          {%- if block.settings.desc != blank -%}
+            <p class="promo-card__desc">{{ block.settings.desc | escape }}</p>
+          {%- endif -%}
+
+          {%- if block.settings.btn_text != blank -%}
+            <span class="promo-card__btn {% if block.settings.btn_style == 'link' %}promo-card__btn--link{% endif %}">
+              {{ block.settings.btn_text | escape }}
+            </span>
+          {%- endif -%}
+        </div>
+
+        {%- if block.settings.image != blank -%}
+          <img src="{{ block.settings.image | image_url: width: 800 }}" alt="{{ block.settings.title | escape }}" class="promo-card__image" loading="lazy">
+        {%- endif -%}
+
+      </a>
+    {%- endfor -%}
+
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Bannières Promo",
+  "max_blocks": 2,
+  "settings": [
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 20,
+      "max": 100,
+      "step": 5,
+      "unit": "px",
+      "label": "Marge en bas",
+      "default": 60
+    }
+  ],
+  "blocks": [
+    {
+      "type": "banner",
+      "name": "Bannière",
+      "settings": [
+        {
+          "type": "color",
+          "id": "bg_color",
+          "label": "Couleur de fond",
+          "default": "#6D8CA7"
+        },
+        {
+          "type": "color",
+          "id": "text_color",
+          "label": "Couleur du texte",
+          "default": "#FFFFFF"
+        },
+        {
+          "type": "text",
+          "id": "subtitle",
+          "label": "Sous-titre (ex: BEST PRICE)",
+          "default": "BEST PRICE"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Titre géant (ex: $69)",
+          "default": "$69"
+        },
+        {
+          "type": "checkbox",
+          "id": "highlight_title",
+          "label": "Mettre le titre sur fond blanc",
+          "default": false
+        },
+        {
+          "type": "textarea",
+          "id": "desc",
+          "label": "Description",
+          "default": "3-Pack Cotton Rib Bodysuits"
+        },
+        {
+          "type": "text",
+          "id": "btn_text",
+          "label": "Texte du bouton",
+          "default": "Shop Now"
+        },
+        {
+          "type": "select",
+          "id": "btn_style",
+          "label": "Style du bouton",
+          "options": [
+            { "value": "solid", "label": "Bouton arrondi plein" },
+            { "value": "link", "label": "Lien texte souligné" }
+          ],
+          "default": "solid"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Lien de la bannière"
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image produit (PNG transparent recommandé)"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Bannières Promo",
+      "blocks": [
+        {
+          "type": "banner",
+          "settings": {
+            "bg_color": "#6B8EAA",
+            "text_color": "#FFFFFF",
+            "subtitle": "BEST PRICE",
+            "title": "$69",
+            "btn_style": "solid"
+          }
+        },
+        {
+          "type": "banner",
+          "settings": {
+            "bg_color": "#EFE6D8",
+            "text_color": "#000000",
+            "subtitle": "SPECIAL OFFER",
+            "title": "10% OFF",
+            "highlight_title": true,
+            "btn_style": "link",
+            "btn_text": "Explore Now!"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

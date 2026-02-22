@@ -1,0 +1,146 @@
+<style>
+  .shop-localization {
+    position: relative;
+    display: inline-block;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+  }
+
+  .shop-localization__btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--shop-text-main, #000);
+    padding: 8px;
+    transition: opacity 0.2s;
+  }
+  
+  .shop-localization__btn:hover {
+    opacity: 0.6;
+  }
+
+  .shop-localization__icon {
+    width: 10px;
+    height: 6px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    transition: transform 0.2s;
+  }
+  
+  .shop-localization__btn[aria-expanded="true"] .shop-localization__icon {
+    transform: rotate(180deg);
+  }
+
+  .shop-localization__dropdown {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background: #ffffff;
+    border: 1px solid #eeeeee;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+    padding: 10px 0;
+    min-width: 130px;
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(10px);
+    transition: all 0.2s ease;
+    list-style: none;
+    margin: 10px 0 0 0;
+  }
+
+  .shop-localization__dropdown.is-open {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+  }
+
+  .shop-localization__item {
+    display: block;
+    width: 100%;
+    text-align: left;
+    padding: 10px 20px;
+    color: #444444;
+    text-decoration: none;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 0.95rem;
+    font-weight: 500;
+    transition: background-color 0.2s, color 0.2s;
+  }
+
+  .shop-localization__item:hover {
+    background-color: #f9f9f9;
+    color: #000000;
+  }
+
+  /* Langue actuellement sélectionnée */
+  .shop-localization__item[aria-current="true"] {
+    background-color: #f0f0f0;
+    color: #000000;
+    font-weight: 800;
+  }
+</style>
+
+{%- if localization.available_languages.size > 1 -%}
+  <div class="shop-localization">
+    {%- form 'localization', id: 'ShopLocalizationForm' -%}
+      
+      <button type="button" class="shop-localization__btn" aria-expanded="false" aria-controls="ShopLanguageList" id="ShopLocalizationBtn">
+        {{ localization.language.iso_code | upcase }}
+        <svg class="shop-localization__icon" viewBox="0 0 10 6"><path d="M1 1L5 5L9 1"></path></svg>
+      </button>
+
+      <ul id="ShopLanguageList" class="shop-localization__dropdown" role="list">
+        {%- for language in localization.available_languages -%}
+          <li>
+            <button type="submit" name="locale_code" value="{{ language.iso_code }}" class="shop-localization__item" {% if language.iso_code == localization.language.iso_code %}aria-current="true"{% endif %}>
+              {{ language.endonym_name | capitalize }}
+            </button>
+          </li>
+        {%- endfor -%}
+      </ul>
+      
+    {%- endform -%}
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const btn = document.getElementById('ShopLocalizationBtn');
+      const dropdown = document.getElementById('ShopLanguageList');
+      
+      if(btn && dropdown) {
+        // Ouvrir/Fermer au clic sur le bouton
+        btn.addEventListener('click', function(e) {
+          e.stopPropagation();
+          const isOpen = dropdown.classList.contains('is-open');
+          
+          if(isOpen) {
+            dropdown.classList.remove('is-open');
+            btn.setAttribute('aria-expanded', 'false');
+          } else {
+            dropdown.classList.add('is-open');
+            btn.setAttribute('aria-expanded', 'true');
+          }
+        });
+
+        // Fermer si on clique ailleurs sur la page
+        document.addEventListener('click', function(e) {
+          if(!e.target.closest('.shop-localization')) {
+            dropdown.classList.remove('is-open');
+            btn.setAttribute('aria-expanded', 'false');
+          }
+        });
+      }
+    });
+  </script>
+{%- endif -%}

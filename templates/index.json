@@ -1,0 +1,113 @@
+{
+  "sections": {
+    "hero": {
+      "type": "hero-banner",
+      "settings": {}
+    },
+    "category_icons": {
+      "type": "category-icons",
+      "settings": {
+        "title": "Most popular [categories] for products",
+        "accent_color": "#00A99D"
+      },
+      "blocks": {
+        "cat_1": {
+          "type": "category",
+          "settings": {
+            "title": "New Arrivals",
+            "bg_color": "#F04A22",
+            "is_icon": true
+          }
+        },
+        "cat_2": {
+          "type": "category",
+          "settings": {
+            "title": "Clearance",
+            "bg_color": "#00A99D",
+            "is_icon": true
+          }
+        },
+        "cat_3": {
+          "type": "category",
+          "settings": {
+            "title": "Fashion",
+            "bg_color": "#E8F5F4",
+            "is_icon": true
+          }
+        }
+      },
+      "block_order": [
+        "cat_1",
+        "cat_2",
+        "cat_3"
+      ]
+    },
+    "promo_banners": {
+      "type": "promo-banners",
+      "settings": {},
+      "blocks": {
+        "banner_1": {
+          "type": "banner",
+          "settings": {
+            "bg_color": "#6B8EAA",
+            "text_color": "#FFFFFF",
+            "subtitle": "BEST PRICE",
+            "title": "$69",
+            "highlight_title": false,
+            "desc": "3-Pack Cotton Rib Bodysuits",
+            "btn_text": "Shop Now",
+            "btn_style": "solid"
+          }
+        },
+        "banner_2": {
+          "type": "banner",
+          "settings": {
+            "bg_color": "#EFE6D8",
+            "text_color": "#000000",
+            "subtitle": "SPECIAL OFFER",
+            "title": "10% OFF",
+            "highlight_title": true,
+            "desc": "Earn 10% Cash back on Swatbabymall.",
+            "btn_text": "Explore Now!",
+            "btn_style": "link"
+          }
+        }
+      },
+      "block_order": [
+        "banner_1",
+        "banner_2"
+      ]
+    },
+    "new_arrivals": {
+      "type": "featured-collection",
+      "settings": {
+        "title": "NEW ARRIVALS",
+        "products_to_show": 4
+      }
+    },
+    "top_selling": {
+      "type": "featured-collection",
+      "settings": {
+        "title": "TOP SELLING",
+        "products_to_show": 4
+      }
+    },
+    "bento_categories": {
+      "type": "bento-categories",
+      "settings": {}
+    },
+    "testimonials": {
+      "type": "testimonials",
+      "settings": {}
+    }
+  },
+  "order": [
+    "hero",
+    "category_icons",
+    "promo_banners",
+    "new_arrivals",
+    "top_selling",
+    "bento_categories",
+    "testimonials"
+  ]
+}

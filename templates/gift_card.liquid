@@ -1,0 +1,15 @@
+{% layout none %}
+<!doctype html>
+<html lang="{{ request.locale.iso_code }}">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Carte Cadeau</title>
+  </head>
+  <body>
+    <main style="text-align: center; padding: 50px; font-family: sans-serif;">
+      <h1>Votre Carte Cadeau TA2LA</h1>
+      <p>Code : {{ gift_card.code }}</p>
+    </main>
+  </body>
+</html>

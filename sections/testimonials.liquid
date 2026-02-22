@@ -1,0 +1,303 @@
+<style>
+  .shop-testimonials-{{ section.id }} {
+    padding: 60px 5%;
+    max-width: 1400px;
+    margin: 0 auto;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    overflow: hidden; /* Empêche le débordement horizontal sur la page */
+  }
+
+  /* --- En-tête : Titre + Flèches --- */
+  .shop-testi__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 40px;
+  }
+
+  .shop-testi__title {
+    font-size: clamp(2rem, 4vw, 3rem);
+    font-weight: 900;
+    color: #000000;
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: -1px;
+    line-height: 1.1;
+  }
+
+  /* Flèches de navigation */
+  .shop-testi__nav {
+    display: flex;
+    gap: 15px;
+  }
+  
+  .shop-testi__nav-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: transform 0.2s ease, opacity 0.2s ease;
+    padding: 5px;
+  }
+  
+  .shop-testi__nav-btn:hover {
+    opacity: 0.6;
+    transform: scale(1.1);
+  }
+
+  .shop-testi__nav-btn svg {
+    width: 24px;
+    height: 24px;
+    fill: #000;
+  }
+
+  /* --- Piste du Carrousel --- */
+  .shop-testi__track {
+    display: flex;
+    gap: 20px;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    padding-bottom: 20px; /* Espace pour l'ombre au survol */
+    /* Cache la barre de défilement */
+    scrollbar-width: none; 
+    -ms-overflow-style: none;
+    scroll-snap-type: x mandatory;
+  }
+  
+  .shop-testi__track::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* --- Carte Témoignage --- */
+  .shop-testi__card {
+    flex: 0 0 400px; /* Largeur fixe de la carte sur grand écran */
+    background-color: #ffffff;
+    border: 1px solid #e0e0e0;
+    border-radius: 20px;
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
+    scroll-snap-align: start;
+    transition: box-shadow 0.3s ease, border-color 0.3s ease;
+  }
+
+  .shop-testi__card:hover {
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+    border-color: #ccc;
+  }
+
+  /* Étoiles */
+  .shop-testi__stars {
+    display: flex;
+    gap: 5px;
+    margin-bottom: 15px;
+  }
+  
+  .shop-testi__stars svg {
+    width: 20px;
+    height: 20px;
+    fill: #FFC633; /* Le jaune spécifique de la maquette Shop.co */
+  }
+
+  /* Nom + Icône Vérifié */
+  .shop-testi__author-wrap {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 15px;
+  }
+
+  .shop-testi__author {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #000;
+    margin: 0;
+  }
+
+  .shop-testi__verified {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    background-color: #01AB31; /* Vert de validation */
+    border-radius: 50%;
+  }
+
+  .shop-testi__verified svg {
+    width: 12px;
+    height: 12px;
+    stroke: #fff;
+    stroke-width: 3;
+    fill: none;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  /* Texte du témoignage */
+  .shop-testi__quote {
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: #666;
+    margin: 0;
+  }
+
+  /* --- Responsive Mobile --- */
+  @media (max-width: 768px) {
+    .shop-testimonials-{{ section.id }} {
+      padding: 40px 5% 40px 5%; /* On enlève le padding droit pour laisser voir la carte suivante */
+    }
+    .shop-testi__header {
+      align-items: center;
+      margin-bottom: 30px;
+    }
+    .shop-testi__nav {
+      display: none; /* On cache les flèches sur mobile car on utilise le swipe tactile */
+    }
+    .shop-testi__track {
+      gap: 15px;
+      padding-right: 5%; /* Assure un espace à la fin du scroll mobile */
+    }
+    .shop-testi__card {
+      flex: 0 0 85%; /* La carte prend 85% de l'écran pour inciter au swipe */
+      padding: 25px;
+    }
+    .shop-testi__author {
+      font-size: 1.1rem;
+    }
+  }
+</style>
+
+<div class="shop-testimonials-{{ section.id }}">
+  
+  <div class="shop-testi__header">
+    {%- if section.settings.title != blank -%}
+      <h2 class="shop-testi__title">{{ section.settings.title | escape }}</h2>
+    {%- endif -%}
+
+    <div class="shop-testi__nav">
+      <button class="shop-testi__nav-btn" id="TestiPrev-{{ section.id }}" aria-label="Précédent">
+        <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+      </button>
+      <button class="shop-testi__nav-btn" id="TestiNext-{{ section.id }}" aria-label="Suivant">
+        <svg viewBox="0 0 24 24"><path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <div class="shop-testi__track" id="TestiTrack-{{ section.id }}">
+    {%- for block in section.blocks -%}
+      <div class="shop-testi__card" {{ block.shopify_attributes }}>
+        
+        <div class="shop-testi__stars">
+          {%- for i in (1..5) -%}
+            <svg viewBox="0 0 24 24"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/></svg>
+          {%- endfor -%}
+        </div>
+
+        <div class="shop-testi__author-wrap">
+          <h3 class="shop-testi__author">{{ block.settings.author | escape }}</h3>
+          <div class="shop-testi__verified" title="Acheteur vérifié">
+            <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
+          </div>
+        </div>
+
+        <p class="shop-testi__quote">"{{ block.settings.quote }}"</p>
+        
+      </div>
+    {%- endfor -%}
+  </div>
+
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const track = document.getElementById('TestiTrack-{{ section.id }}');
+    const prevBtn = document.getElementById('TestiPrev-{{ section.id }}');
+    const nextBtn = document.getElementById('TestiNext-{{ section.id }}');
+    
+    // Défile de la largeur d'une carte + le gap (400 + 20)
+    const scrollAmount = 420; 
+
+    if(nextBtn && prevBtn && track) {
+      nextBtn.addEventListener('click', () => {
+        track.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+      });
+
+      prevBtn.addEventListener('click', () => {
+        track.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+      });
+    }
+  });
+</script>
+
+{% schema %}
+{
+  "name": "Témoignages Style Shop",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Titre principal",
+      "default": "OUR HAPPY CUSTOMERS"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "testimonial",
+      "name": "Avis Client",
+      "settings": [
+        {
+          "type": "text",
+          "id": "author",
+          "label": "Nom du client",
+          "default": "Sarah M."
+        },
+        {
+          "type": "textarea",
+          "id": "quote",
+          "label": "Message",
+          "default": "I'm blown away by the quality and style of the clothes I received. From casual wear to elegant dresses, every piece I've bought has exceeded my expectations."
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Témoignages Style Shop",
+      "blocks": [
+        {
+          "type": "testimonial",
+          "settings": {
+            "author": "Sarah M.",
+            "quote": "I'm blown away by the quality and style of the clothes I received. From casual wear to elegant dresses, every piece I've bought has exceeded my expectations."
+          }
+        },
+        {
+          "type": "testimonial",
+          "settings": {
+            "author": "Alex K.",
+            "quote": "Finding clothes that align with my personal style used to be a challenge until I discovered Shop.co. The range of options they offer is truly remarkable, catering to a variety of tastes and occasions."
+          }
+        },
+        {
+          "type": "testimonial",
+          "settings": {
+            "author": "James L.",
+            "quote": "As someone who's always on the lookout for unique fashion pieces, I'm thrilled to have stumbled upon Shop.co. The selection of clothes is not only diverse but also on-point with the latest trends."
+          }
+        },
+        {
+          "type": "testimonial",
+          "settings": {
+            "author": "Mooen A.",
+            "quote": "The shopping experience was seamless, and the delivery was surprisingly fast. The quality of the fabric is top-notch. Highly recommended!"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

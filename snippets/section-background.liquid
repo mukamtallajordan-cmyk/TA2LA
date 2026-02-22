@@ -1,0 +1,15 @@
+{% comment %}
+  Utilisation : 
+  {% render 'section-background', section_id: section.id, bg_color: section.settings.section_bg %}
+{% endcomment %}
+
+{%- if bg_color != blank and bg_color != 'rgba(0,0,0,0)' -%}
+  <style>
+    /* Shopify englobe automatiquement chaque section dans une div avec l'ID #shopify-section-[ID]
+      On cible cette div globale pour que le fond prenne 100% de la largeur de l'écran !
+    */
+    #shopify-section-{{ section_id }} {
+      background: {{ bg_color }};
+    }
+  </style>
+{%- endif -%}
